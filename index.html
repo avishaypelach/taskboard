@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.css">
+
+  <link rel="stylesheet" href="styles/main.css">
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700" rel="stylesheet">
+  <title>TaskBorard</title>
+</head>
+<body>
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#"> <img src="assets/taskboard%20logo.svg" alt="logo"/> </a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#"> Board <span class="sr-only">(current)</span></a></li>
+        <li><a href="#"> Members </a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+<main>
+
+  <div class="sub-main" id="tid">
+    <div class="panel panel-default">
+      <div class="panel-heading panel-size">
+        <h3 class="panel-title"> Backlog </h3>
+      </div>
+      <div class="panel-body">
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+      </div>
+      <div class="panel-footer panel-size">
+        <h3 class="addACard"> add a card... </h3>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading panel-size">
+        <h3 class="panel-title"> Todo </h3>
+      </div>
+      <div class="panel-body">
+        <div class="card"></div>
+      </div>
+      <div class="panel-footer panel-size">
+        <h3 class="addACard"> add a card... </h3>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading panel-size">
+        <h3 class="panel-title"> In Progress </h3>
+      </div>
+      <div class="panel-body">
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+      </div>
+      <div class="panel-footer panel-size">
+        <h3 class="addACard"> add a card... </h3>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading panel-size">
+        <h3 class="panel-title"> Done </h3>
+      </div>
+      <div class="panel-body">
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+      </div>
+      <div class="panel-footer panel-size">
+        <h3 class="addACard"> add a card... </h3>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading panel-size">
+        <h3 class="panel-title"> Done </h3>
+      </div>
+      <div class="panel-body">
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+      </div>
+      <div class="panel-footer panel-size">
+        <h3 class="addACard"> add a card... </h3>
+      </div>
+    </div>
+
+  </div>
+
+  <button class="addAPanel" onclick="addingAList()"> add a panel</button>
+</main>
+
+<script src="javascript/script.js"></script>
+
+</body>
+</html>
