@@ -22,7 +22,7 @@ function addingAList() {
             </button>
           
             <ul class="dropdown-menu" id="dropdownMenu2" aria-labelledby="dropdownMenu1">
-              <li><a href="#">Delete List</a></li>
+              <li><a href="#" class="deleter">Delete List</a></li>
             </ul>
           </div>
 
@@ -37,7 +37,52 @@ function addingAList() {
       </div>`;
 
   divHolder.innerHTML = listTemplate;
+  //catching all header buttons
+  const btns = document.querySelectorAll('.dropdown-toggle');
+
+
+  for (let btn of btns) {
+    btn.addEventListener("click", panelActionHendler);
+  }
+
+  /* When the user clicks on the button,
+   toggle between hiding and showing the dropdown content */
+  function panelActionHendler() {
+    const currentBtn = event.target;
+
+    //catching every buttens div father
+    const divParent = currentBtn.closest('.dropdown');
+
+    const ulMenu = divParent.querySelector('.dropdown-menu');
+
+
+    ulMenu.classList.toggle('show');
+  }
+
+
+//catching diffirent "Delete List" eachtime
+  const deleters = document.querySelectorAll('.deleter');
+
+//adding eventlisteners on every 'delete list'
+  for(let deleter of deleters){
+    deleter.addEventListener('click',removeList);
+  }
+
+//a function that deletes a list.
+  function removeList(event) {
+    confirm("are you sure you want to delete?");
+
+    //saves the event 'click'.
+    const target = event.target;
+
+    //catching closest father of 'deleter'.
+    const listPanel = target.closest('.panel');
+
+    //removing closest father of 'deleter'.
+    listPanel.remove();
+  }
 }
+
 
 
 //function that creates a card in in parent panel.
@@ -62,12 +107,12 @@ function createACard() {
   currentCardListHolder.appendChild(divHolder);
 }
 
-
 function titleClickHandler(event) {
   const target = event.target;
 
   // Hide the clicked title
   target.style.display = 'none';
+
   // Show the input next to it
   const inputElm       = target.parentNode.querySelector('input');
 
@@ -142,7 +187,6 @@ const btns = document.querySelectorAll('.dropdown-toggle');
 
 
 for (let btn of btns) {
-  console.info('hi');
   btn.addEventListener("click", panelActionHendler);
 }
 
@@ -169,48 +213,18 @@ for(let deleter of deleters){
   deleter.addEventListener('click',removeList);
 }
 
-
-// const target = event.target;
-//
-// //target the parent of the lists.
-// const currentPanel = target.parentNode.parentNode;
-// console.info(currentPanel);
-
-
-
+//a function that deletes a list.
 function removeList(event) {
-  console.info('got event!', event);
   confirm("are you sure you want to delete?");
 
+  //saves the event 'click'.
   const target = event.target;
-  console.info(target,'hola');
 
+  //catching closest father of 'deleter'.
   const listPanel = target.closest('.panel');
 
+  //removing closest father of 'deleter'.
   listPanel.remove();
-
-  // if(target.hasChildNodes())
-  // {
-  //   const children =[];
-  //   children = target.childNodes();
-  //   for( let child in children)
-  //   {
-  //     target.removeChild[child];
-  //   }
-  // }
-
-
-  // const div;
-  // while (div = document.getElementsByClassName('.panel')) {
-  //   div.parentNode.removeChild(div);
-  // }
-  //
-  // const child = document.getElementsByClassName('.panel');
-  // console.info(child,'got the child');
-  // const parent = document.getElementById('tid');
-  //
-  // parent.removeChild(child);
-
 }
 
 
