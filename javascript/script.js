@@ -3,7 +3,7 @@
  */
 
 
-function addingAList() {
+function addingAList(newList) {
 
   const divHolder = document.createElement('div');
 
@@ -14,7 +14,7 @@ function addingAList() {
 `      <div class="panel panel-default">
         <div class="panel-heading panel-size">
           <input type="text" style="display: none">
-          <span>New List</span>
+          <span>${newList}</span>
 
           <div class="dropdown">
             <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
@@ -173,11 +173,6 @@ function addList(event) {
   initListTitles(list);
 }
 
-// const addListBtn = document.querySelector('.addAPanel');
-//
-// addAPanel.addEventListener('click', addingAList);
-//
-// initListTitles();
 
 
 // -------------------------------------------------------------
@@ -231,5 +226,32 @@ function removeList(event) {
 
 
 
+function reqListener () {
+  const target = event.target;
+  JSON.parse(target.responseText);
+  console.info(JSON.parse(target.responseText));
+
+  let data = JSON.parse(target.response);
+  console.info(data);
+    //
+  // console.info(data.board);
+
+  for(let list of data.board){
+
+    addingAList(list.title);
+
+    initListTitles();
+
+  }
+
+
+}
+
+const oReq = new XMLHttpRequest();
+oReq.addEventListener("load", reqListener);
+oReq.open("GET", "assets/board.json");
+oReq.send();
+
+// ----------------------------------
 
 
