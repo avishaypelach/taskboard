@@ -1,65 +1,6 @@
 /**
  * Created by avishay on 27-Feb-17.
  */
-// //function that creates a new panel.
-// function addingAList() {
-//
-//   const divHolder = document.createElement('div');
-//
-//   document.getElementById("tid").appendChild(divHolder);
-//
-//   const newList =
-//
-//   `<div class="panel panel-default">
-//
-//     <div class="panel-heading panel-size">
-//
-//       <h3 class="panel-title">place holder</h3>
-//
-//     </div>
-//
-//     <div class="panel-body" id="cardList"> </div>
-//
-//     <div class="panel-footer panel-size">
-//
-//       <button onclick="createACard()" class="addACard">add a card...</button>
-//
-//     </div>
-//
-//   </div>`;
-//
-//   divHolder.innerHTML = newList;
-// }
-//
-// function divClicked() {
-//   const h3Holder = document.querySelector(".panel-title");
-//   console.log(h3Holder);
-//
-//   h3Holder.addEventListener('click', function () {
-//
-//   const editableText = $("<textarea />");
-//
-//   editableText.valueOf(h3Holder);
-//
-//   $(this).replaceWith(editableText);
-//
-//   editableText.focus();
-//
-//   // setup the blur event for this new textarea
-//   editableText.blur(editableTextBlurred);
-//   });
-// }
-//
-// function editableTextBlurred() {
-//   const html = $(this).val();
-//   const viewableText = $("<h3>");
-//   viewableText.html(html);
-//   $(this).replaceWith(viewableText);
-//   // setup the click event for this new div
-//   $(viewableText).click(divClicked);
-// }
-
-// ----------------------------------------------------
 
 
 function addingAList() {
@@ -70,49 +11,49 @@ function addingAList() {
 
   const listTemplate =
 
-//     `<header class="list-title">
-//     <span>New List</span>
-//     <input type="text" style="display: none">
-//   </header>
-//   <div class="cards"></div>
-//   <button class="addAPanel" onclick="addingAList()"> add a panel</button>
-// ;'
-
-`     <div class="panel panel-default">
+`      <div class="panel panel-default">
         <div class="panel-heading panel-size">
-          <!--<h3 class="panel-title"> Todo </h3>-->
-          <span>New List</span>
           <input type="text" style="display: none">
+          <span>New List</span>
+
+          <div class="dropdown">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            <span class="caret"></span>
+            </button>
+          
+            <ul class="dropdown-menu" id="dropdownMenu2" aria-labelledby="dropdownMenu1">
+              <li><a href="#">Delete List</a></li>
+            </ul>
+          </div>
+
         </div>
         <div class="panel-body">
-          <div class="card"></div>
+          
         </div>
+
         <div class="panel-footer panel-size">
-           <button onclick="createACard()" class="addACard">add a card...</button>
+          <button onclick="createACard()" class="addACard">add a card...</button>
         </div>
       </div>`;
 
   divHolder.innerHTML = listTemplate;
 }
 
+
 //function that creates a card in in parent panel.
 function createACard() {
 
-  //target the corect list.
+  //target the correct list.
   const target = event.target;
-  console.log(target);
 
   //target the parent of the lists.
   const currentPanel = target.parentNode.parentNode;
-  console.log(currentPanel);
 
   //target right place to insert the new card.
   const currentCardListHolder = currentPanel.querySelector(".panel-body");
-  console.log(currentCardListHolder);
 
   //creating element that holds div creation.
   const divHolder = document.createElement('div');
-  console.log(divHolder);
 
   //giving divHolder style.
   divHolder.className = "card";
@@ -142,9 +83,9 @@ function titleInputKeyHandler(event) {
   if (event.keyCode === 13) {
     // Take the value from the input
     const value    = target.value;
+
     // Update the title with that value
     const titleElm = target.parentNode.querySelector('span');
-    console.info(titleElm);
 
     titleElm.innerHTML = value;
 
@@ -157,13 +98,13 @@ function titleInputKeyHandler(event) {
 function initListTitles(targetList) {
   const targetParent = targetList === undefined ? document : targetList;
 
-  const titleElms = targetParent.querySelectorAll('.panel-heading .panel-size span');
+  const titleElms = targetParent.querySelectorAll('.panel-heading > span');
 
   for (const title of titleElms) {
     title.addEventListener('click', titleClickHandler);
   }
 
-  const titleInputElms = targetParent.querySelectorAll('.panel-heading .panel-size input');
+  const titleInputElms = targetParent.querySelectorAll('.panel-heading > input');
 
   for (const titleInput of titleInputElms) {
     titleInput.addEventListener('keydown', titleInputKeyHandler);
@@ -187,11 +128,93 @@ function addList(event) {
   initListTitles(list);
 }
 
-const addListBtn = document.querySelector('.add-list');
+// const addListBtn = document.querySelector('.addAPanel');
+//
+// addAPanel.addEventListener('click', addingAList);
+//
+// initListTitles();
 
-addListBtn.addEventListener('click', addList);
 
-initListTitles();
+// -------------------------------------------------------------
+
+//catching all header buttons
+const btns = document.querySelectorAll('.dropdown-toggle');
+
+
+for (let btn of btns) {
+  console.info('hi');
+  btn.addEventListener("click", panelActionHendler);
+}
+
+/* When the user clicks on the button,
+ toggle between hiding and showing the dropdown content */
+function panelActionHendler() {
+  const currentBtn = event.target;
+
+  //catching every buttens div father
+  const divParent = currentBtn.closest('.dropdown');
+
+  const ulMenu = divParent.querySelector('.dropdown-menu');
+
+
+  ulMenu.classList.toggle('show');
+}
+
+
+//catching diffirent "Delete List" eachtime
+const deleters = document.querySelectorAll('.deleter');
+
+//adding eventlisteners on every 'delete list'
+for(let deleter of deleters){
+  deleter.addEventListener('click',removeList);
+}
+
+
+// const target = event.target;
+//
+// //target the parent of the lists.
+// const currentPanel = target.parentNode.parentNode;
+// console.info(currentPanel);
+
+
+
+function removeList(event) {
+  console.info('got event!', event);
+  confirm("are you sure you want to delete?");
+
+  const target = event.target;
+  console.info(target,'hola');
+
+  const listPanel = target.closest('.panel');
+
+  listPanel.remove();
+
+  // if(target.hasChildNodes())
+  // {
+  //   const children =[];
+  //   children = target.childNodes();
+  //   for( let child in children)
+  //   {
+  //     target.removeChild[child];
+  //   }
+  // }
+
+
+  // const div;
+  // while (div = document.getElementsByClassName('.panel')) {
+  //   div.parentNode.removeChild(div);
+  // }
+  //
+  // const child = document.getElementsByClassName('.panel');
+  // console.info(child,'got the child');
+  // const parent = document.getElementById('tid');
+  //
+  // parent.removeChild(child);
+
+}
+
+
+
 
 
 
