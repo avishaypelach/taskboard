@@ -21,7 +21,7 @@ function addingAList() {
             <span class="caret"></span>
             </button>
           
-            <ul class="dropdown-menu" id="dropdownMenu2" aria-labelledby="dropdownMenu1">
+            <ul class="dropdown-menu dropdown-menu-right" id="dropdownMenu2" aria-labelledby="dropdownMenu1">
               <li><a href="#" class="deleter">Delete List</a></li>
             </ul>
           </div>
