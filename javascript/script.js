@@ -5,6 +5,7 @@
 
 function addingAList(newList) {
 
+  //element that creates new div.
   const divHolder = document.createElement('div');
 
   document.getElementById("tid").appendChild(divHolder);
@@ -14,14 +15,14 @@ function addingAList(newList) {
 `      <div class="panel panel-default">
         <div class="panel-heading panel-size">
           <input type="text" style="display: none">
-          <span>${newList}</span>
+          <span class="newList">${newList}</span>
 
           <div class="dropdown">
             <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
             <span class="caret"></span>
             </button>
           
-            <ul class="dropdown-menu dropdown-menu-right" id="dropdownMenu2" aria-labelledby="dropdownMenu1">
+            <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
               <li><a href="#" class="deleter">Delete List</a></li>
             </ul>
           </div>
@@ -40,7 +41,7 @@ function addingAList(newList) {
   //catching all header buttons
   const btns = document.querySelectorAll('.dropdown-toggle');
 
-
+  //inserting eventlistener to every button.
   for (let btn of btns) {
     btn.addEventListener("click", panelActionHendler);
   }
@@ -105,6 +106,19 @@ function createACard() {
 
   //implementing divHolder into panel's body.
   currentCardListHolder.appendChild(divHolder);
+
+  //creating button element with every card.
+  const creatingButton = document.createElement('button');
+  console.info(creatingButton);
+
+  //giving every created button some style.
+  creatingButton.className += "btn btn-default btn-group-xs btn-position-style";
+
+  //implementing a button in every card.
+  divHolder.appendChild(creatingButton);
+
+  //inserting text to the button.
+  creatingButton.innerHTML = 'Edit card';
 }
 
 function titleClickHandler(event) {
@@ -156,22 +170,22 @@ function initListTitles(targetList) {
   }
 }
 
-function addList(event) {
-  const target = event.target;
-
-  // Create a list element
-  const list = document.createElement('div');
-
-  list.className = 'list';
-  list.innerHTML = listTemplate;
-
-  // Insert it at the end of the lists
-  const main = target.closest('main');
-
-  main.insertBefore(list, target.parentNode);
-
-  initListTitles(list);
-}
+// function addList(event) {
+//   const target = event.target;
+//
+//   // Create a list element
+//   const list = document.createElement('div');
+//
+//   list.className = 'list';
+//   list.innerHTML = listTemplate;
+//
+//   // Insert it at the end of the lists
+//   const main = target.closest('main');
+//
+//   main.insertBefore(list, target.parentNode);
+//
+//   initListTitles(list);
+// }
 
 
 
@@ -223,27 +237,20 @@ function removeList(event) {
 }
 
 
-
-
-
 function reqListener () {
   const target = event.target;
   JSON.parse(target.responseText);
-  console.info(JSON.parse(target.responseText));
+  // console.info(JSON.parse(target.responseText));
 
   let data = JSON.parse(target.response);
-  console.info(data);
-    //
-  // console.info(data.board);
+  // console.info(data);
 
   for(let list of data.board){
 
     addingAList(list.title);
 
     initListTitles();
-
   }
-
 
 }
 

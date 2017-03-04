@@ -80,7 +80,7 @@ main{
   overflow-y: auto;
 }
 .card{
-  /*width: 120px;*/
+  position: relative;
   height: 120px;
   border: 2px solid #2e6da4;
   margin: 10px;
@@ -115,5 +115,22 @@ main{
 }
 .show{
   display:block;
+}
+
+.btn-position-style{
+  position: absolute;
+  top: 1%;
+  right: 1%;
+  display: none;
+  background-color: #5bc0de;
+  color: white;
+}
+
+.card:hover .btn-position-style{
+  display: inline-block;
+}
+.btn-position-style:hover{
+  background-color: #2e6da4;
+  color: white;
 }
 
