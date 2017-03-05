@@ -275,7 +275,7 @@ function reqListener () {
   for (let list of data.board){
 
     addingAList(list);
-    
+
   }
 }
 
