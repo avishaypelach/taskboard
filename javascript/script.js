@@ -34,6 +34,7 @@ function addingAList(newList) {
 
         <div class="panel-footer panel-size">
           <button onclick="createACard()" class="addACard">add a card...</button>
+          
         </div>
       </div>`;
 
@@ -44,6 +45,7 @@ function addingAList(newList) {
   //inserting eventlistener to every button.
   for (let btn of btns) {
     btn.addEventListener("click", panelActionHendler);
+
   }
 
   /* When the user clicks on the button,
@@ -55,7 +57,6 @@ function addingAList(newList) {
     const divParent = currentBtn.closest('.dropdown');
 
     const ulMenu = divParent.querySelector('.dropdown-menu');
-
 
     ulMenu.classList.toggle('show');
   }
@@ -75,6 +76,7 @@ function addingAList(newList) {
 
     //saves the event 'click'.
     const target = event.target;
+    console.info(target,'salou');
 
     //catching closest father of 'deleter'.
     const listPanel = target.closest('.panel');
@@ -119,6 +121,29 @@ function createACard() {
 
   //inserting text to the button.
   creatingButton.innerHTML = 'Edit card';
+
+  //putting eventlistener on 'edit card' button.
+  creatingButton.addEventListener('click',openModal);
+
+}
+
+function openModal() {
+
+  //catching the class of modal.
+  const modalClass = document.querySelector('.modal-shown');
+
+  //turning modal style to block.
+  modalClass.style.display = 'block';
+
+  //catching 'close' buttons.
+  const closeButtons = document.querySelectorAll('.close-modal');
+
+  //putting eventlisteners on "close" buttons.
+  for (const closebutton of closeButtons) {
+    closebutton.addEventListener('click', function () {
+      modalClass.style.display = 'none';
+    });
+  }
 }
 
 function titleClickHandler(event) {
