@@ -4,18 +4,19 @@
 
 
 function addingAList(newList) {
+  console.info(newList);
+  let listTitle = newList || 'New List';
 
   //element that creates new div.
   const divHolder = document.createElement('div');
 
   document.getElementById("tid").appendChild(divHolder);
 
-  const listTemplate =
-
-`      <div class="panel panel-default">
+  const listTemplate = `
+      <div class="panel panel-default">
         <div class="panel-heading panel-size">
           <input type="text" style="display: none">
-          <span class="newList">${newList}</span>
+          <span class="newList">${listTitle}</span>
 
           <div class="dropdown">
             <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
@@ -37,6 +38,7 @@ function addingAList(newList) {
           
         </div>
       </div>`;
+
 
   divHolder.innerHTML = listTemplate;
   //catching all header buttons
@@ -84,12 +86,14 @@ function addingAList(newList) {
     //removing closest father of 'deleter'.
     listPanel.remove();
   }
+
+  initListTitles();
 }
 
 
 
 //function that creates a card in in parent panel.
-function createACard() {
+function createACard(list) {
 
   //target the correct list.
   const target = event.target;
@@ -265,18 +269,14 @@ function removeList(event) {
 function reqListener () {
   const target = event.target;
   JSON.parse(target.responseText);
-  // console.info(JSON.parse(target.responseText));
 
   let data = JSON.parse(target.response);
-  // console.info(data);
 
-  for(let list of data.board){
+  for (let list of data.board){
 
-    addingAList(list.title);
-
-    initListTitles();
+    addingAList(list);
+    
   }
-
 }
 
 const oReq = new XMLHttpRequest();
