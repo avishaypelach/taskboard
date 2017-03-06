@@ -85,6 +85,7 @@ main{
   border: 2px solid #2e6da4;
   margin: 10px;
   border-radius: 4px;
+  overflow: auto;
 }
 .btnAddAPanel{
   display: inline-block;
