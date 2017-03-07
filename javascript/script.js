@@ -155,43 +155,59 @@ function addingAList(newList) {
 
 //function that creates a card in in parent panel.
   function createACard() {
-  console.info('heloooo');
-  //target the correct list.
-  const target = event.target;
 
-  //target the parent of the lists.
-  const currentPanel = target.parentNode.parentNode;
+    //target the correct list.
+    const target = event.target;
 
-  //target right place to insert the new card.
-  const currentCardListHolder = currentPanel.querySelector(".panel-body");
+    //target the parent of the lists.
+    const currentPanel = target.parentNode.parentNode;
 
-  //creating element that holds div creation.
-  const divHolder = document.createElement('div');
+    //target right place to insert the new card.
+    const currentCardListHolder = currentPanel.querySelector(".panel-body");
 
-  //giving divHolder style.
-  divHolder.className = "card";
+    //creating element that holds div creation.
+    const divHolder = document.createElement('div');
 
-  //implementing divHolder into panel's body.
-  currentCardListHolder.appendChild(divHolder);
+    //giving divHolder style.
+    divHolder.className = "card";
 
-  //creating button element with every card.
-  const creatingButton = document.createElement('button');
-  console.info(creatingButton);
+    //implementing divHolder into panel's body.
+    currentCardListHolder.appendChild(divHolder);
 
-  //giving every created button some style.
-  creatingButton.className += "btn btn-default btn-group-xs btn-position-style";
+    //creating button element with every card.
+    const creatingButton = document.createElement('button');
 
-  //implementing a button in every card.
-  divHolder.appendChild(creatingButton);
+    //giving button some style.
+    creatingButton.className += "btn btn-default btn-group-xs btn-position-style";
 
-  //inserting text to the button.
-  creatingButton.innerHTML = 'Edit card';
+    //implementing a button in every card.
+    divHolder.appendChild(creatingButton);
 
-  //putting eventlistener on 'edit card' button.
-  creatingButton.addEventListener('click', openModal);
+    //inserting text to the button.
+    creatingButton.innerHTML = 'Edit card';
 
+    //putting eventlistener on 'edit card' button.
+    creatingButton.addEventListener('click', openModal);
 
-}
+    //creating element that holds div creation.
+    const membersHolder = document.createElement('div');
+
+    //giving memberHolder style.
+    membersHolder.className += "btn-group btn-group-xs divMember";
+
+    //creating button element with every card.
+    const creatingMemberBtn = document.createElement('button');
+
+    //giving button members style.
+    creatingMemberBtn.className += "btn btn-default memberBtn";
+
+    //implementing a button in every div member.
+    membersHolder.appendChild(creatingMemberBtn);
+
+    // implementing div member into card.
+    divHolder.appendChild(membersHolder);
+
+  }
 
   function openModal() {
 
@@ -341,11 +357,13 @@ function addingAList(newList) {
     }
   }
 
+  function getBoardData() {
+
   const oReq = new XMLHttpRequest();
   oReq.addEventListener("load", reqListener);
   oReq.open("GET", "assets/board.json");
   oReq.send();
-
+  }
 // ----------------------------------
 
-
+getBoardData();
