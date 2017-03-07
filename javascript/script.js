@@ -26,7 +26,7 @@ function addingAList(newList) {
         task = task.text;
 
         //catch the current panel.
-        const currentPanel = document.querySelector('.panel');
+        const currentPanel = newDiv.querySelector('.temp');
 
         //target right place to insert the new card.
         const currentCardListHolder = currentPanel.querySelector(".panel-body");
@@ -42,16 +42,15 @@ function addingAList(newList) {
 
         //creating button element with every card.
         const creatingButton = document.createElement('button');
-        console.info(creatingButton);
 
         //giving every created button some style.
         creatingButton.className += "btn btn-default btn-group-xs btn-position-style";
 
-        //implementing a button in every card.
-        divHolder.appendChild(creatingButton);
-
         //inserting task into a card.
         divHolder.innerHTML = task;
+
+        //implementing a button in every card.
+        divHolder.appendChild(creatingButton);
 
         //inserting text to the button.
         creatingButton.innerHTML = 'Edit card';
@@ -63,15 +62,17 @@ function addingAList(newList) {
   }
 
   hendelListTitle(newList);
-
+  //newlist->card
 
     //element that creates new div.
     const divHolder = document.createElement('div');
 
     document.getElementById("tid").appendChild(divHolder);
 
+
     const listTemplate = `
-      <div class="panel panel-default">
+      <div class="panel panel-default temp">
+      <!--<div class ="">-->
         <div class="panel-heading panel-size">
           <input type="text" style="display: none">
           <span class="newList">${listTitle}</span>
@@ -93,12 +94,16 @@ function addingAList(newList) {
 
         <div class="panel-footer panel-size">
           <button onclick="createACard()" class="addACard">add a card...</button>
-          
         </div>
-      </div>`;
+      </div>`
+      ;
 
+  const newDiv = document.createElement('div');
+  // newDiv.setAttribute("class","panel panel-default");
+  divHolder.appendChild(newDiv);
+  newDiv.innerHTML =listTemplate;
 
-    divHolder.innerHTML = listTemplate;
+    // divHolder.innerHTML = listTemplate;
     //catching all header buttons
     const btns = document.querySelectorAll('.dropdown-toggle');
 
@@ -150,42 +155,43 @@ function addingAList(newList) {
 
 //function that creates a card in in parent panel.
   function createACard() {
+  console.info('heloooo');
+  //target the correct list.
+  const target = event.target;
 
-    //target the correct list.
-    const target = event.target;
+  //target the parent of the lists.
+  const currentPanel = target.parentNode.parentNode;
 
-    //target the parent of the lists.
-    const currentPanel = target.parentNode.parentNode;
+  //target right place to insert the new card.
+  const currentCardListHolder = currentPanel.querySelector(".panel-body");
 
-    //target right place to insert the new card.
-    const currentCardListHolder = currentPanel.querySelector(".panel-body");
+  //creating element that holds div creation.
+  const divHolder = document.createElement('div');
 
-    //creating element that holds div creation.
-    const divHolder = document.createElement('div');
+  //giving divHolder style.
+  divHolder.className = "card";
 
-    //giving divHolder style.
-    divHolder.className = "card";
+  //implementing divHolder into panel's body.
+  currentCardListHolder.appendChild(divHolder);
 
-    //implementing divHolder into panel's body.
-    currentCardListHolder.appendChild(divHolder);
+  //creating button element with every card.
+  const creatingButton = document.createElement('button');
+  console.info(creatingButton);
 
-    //creating button element with every card.
-    const creatingButton = document.createElement('button');
-    console.info(creatingButton);
+  //giving every created button some style.
+  creatingButton.className += "btn btn-default btn-group-xs btn-position-style";
 
-    //giving every created button some style.
-    creatingButton.className += "btn btn-default btn-group-xs btn-position-style";
+  //implementing a button in every card.
+  divHolder.appendChild(creatingButton);
 
-    //implementing a button in every card.
-    divHolder.appendChild(creatingButton);
+  //inserting text to the button.
+  creatingButton.innerHTML = 'Edit card';
 
-    //inserting text to the button.
-    creatingButton.innerHTML = 'Edit card';
+  //putting eventlistener on 'edit card' button.
+  creatingButton.addEventListener('click', openModal);
 
-    //putting eventlistener on 'edit card' button.
-    creatingButton.addEventListener('click', openModal);
 
-  }
+}
 
   function openModal() {
 
