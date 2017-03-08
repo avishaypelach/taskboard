@@ -1,14 +1,35 @@
 /**
  * Created by avishay on 27-Feb-17.
  */
-window.addEventListener('hashchange', (event) => {
+
+const appData = {
+  lists: [],
+  members: []
+};
+
+getBoardData();
+
+window.addEventListener('hashchange', () => {
+  initPageByHash();
+});
+
+
+function initPageByHash() {
+  console.info('initPageByHash');
+
   console.log(window.location.hash);
 
-  const loction = window.location.hash;
+  const hash = window.location.hash;
+  if (!hash) {
+    window.location.hash = '#board';
+    return;
+  }
 
-  if (loction === '#board'){
+  if (hash === '#board') {
 
-    function reqListener() {
+    // target.classList.add('active');
+
+    function reqListener(event) {
       const target = event.target;
       JSON.parse(target.responseText);
 
@@ -27,53 +48,65 @@ window.addEventListener('hashchange', (event) => {
     oReq.send();
   }
 
-  if (loction === '#Members'){
+  if (hash === '#members') {
 
-    function reqListener() {
+    // target.classList.add('active');
+
+    function getMembersPage(event) {
       const target = event.target;
       JSON.parse(target.responseText);
 
-
       membersPage()
+
 
     }
 
     const oReq = new XMLHttpRequest();
-    oReq.addEventListener("load", reqListener);
-    oReq.open("GET", "assets/board.json");
+    oReq.addEventListener("load", getMembersPage);
+    oReq.open("GET", "assets/members.json");
     oReq.send();
   }
+}
 
-});
+//-----------------members------------
+
+function membersPage() {
+
+  const html = `<h2>Members</h2>
+  <ul>
+    <li>  </li>
+    <li>  </li>
+    <li>  </li>
+  </ul>
+
+  `;
+
+  //catching place that gets  div members.
+  const mainDiv = document.querySelector('main');
+
+  mainDiv.innerHTML = html;
 
 
-
-// -----------------members------------
-
-function membersPage(){
-
-
-  //creating div element.
-  const memebersMain = document.createElement('div');
-
-  //giving div membersMain style.
-  memebersMain.className += ("membersMainDiv");
-
-  //creating h2 has page heading;
-  const membersHeading  = document.createElement('h2');
-
-  membersHeading.innerHTML = 'Members';
-
-  //creating div membersPlate.
-  // const membersPlate = memebersMain.createElement('div');
-
-  //giving div membersPlate style.
-  // membersPlate.className += ("membersPlatedive");
+  // //creating div element.
+  // const memebersMain = document.createElement('div');
+  //
+  // //giving div membersMain style.
+  // memebersMain.className += ("membersMainDiv");
+  //
+  //
+  // //inserting memberMain into mainDiv.
+  // mainDiv.innerHTML = memebersMain;
+  //
+  // //creating h2 has page heading;
+  // const membersHeading  = document.createElement('h2');
+  //
+  // membersHeading.innerHTML = 'Members';
+  //
+  // memebersMain.appendChild(membersHeading);
 
 }
 
-membersPage();
-// ------------------------------------
+// -----------------------------------
 
 function addingAList(newList) {
 
@@ -91,9 +124,9 @@ function addingAList(newList) {
 
   function hendelCardPlace(obj) {
 
-    if (obj !== undefined){
+    if (obj !== undefined) {
 
-      for (let task of obj.tasks){
+      for (let task of obj.tasks) {
 
         task = task.text;
 
@@ -134,17 +167,17 @@ function addingAList(newList) {
   }
 
   hendelListTitle(newList);
-  //newlist->card
 
-    //element that creates new div.
-    const divHolder = document.createElement('div');
+  //element that creates new div.
+  const divHolder = document.createElement('div');
 
-    document.getElementById("tid").appendChild(divHolder);
+  //implementing new div in container.
+  document.querySelector('main').appendChild(divHolder);
 
-
-    const listTemplate = `
-      <div class="panel panel-default temp">
-      <!--<div class ="">-->
+  const listTemplate = `
+  <div class="sub-main">
+    <div class="lisitsContainer" id="container">
+      <div class="panel panel-default temp">  
         <div class="panel-heading panel-size">
           <input type="text" style="display: none">
           <span class="newList">${listTitle}</span>
@@ -167,212 +200,24 @@ function addingAList(newList) {
         <div class="panel-footer panel-size">
           <button onclick="createACard()" class="addACard">add a card...</button>
         </div>
-      </div>`
-      ;
+      </div>
+  </div>
+</div>`
+    ;
 
-  const newDiv = document.createElement('div');
-  // newDiv.setAttribute("class","panel panel-default");
+  // const newDiv = document.createElement('div');
+
+  newDiv.setAttribute("class","panel panel-default");
+
   divHolder.appendChild(newDiv);
-  newDiv.innerHTML =listTemplate;
 
-    // divHolder.innerHTML = listTemplate;
-    //catching all header buttons
-    const btns = document.querySelectorAll('.dropdown-toggle');
+  newDiv.innerHTML = listTemplate;
 
-    //inserting eventlistener to every button.
-    for (let btn of btns) {
-      btn.addEventListener("click", panelActionHendler);
-    }
-
-    /* When the user clicks on the button,
-     toggle between hiding and showing the dropdown content */
-    function panelActionHendler() {
-      const currentBtn = event.target;
-
-      //catching every buttens div father
-      const divParent = currentBtn.closest('.dropdown');
-
-      const ulMenu = divParent.querySelector('.dropdown-menu');
-
-      ulMenu.classList.toggle('show');
-    }
-
-
-//catching diffirent "Delete List" eachtime
-    const deleters = document.querySelectorAll('.deleter');
-
-//adding eventlisteners on every 'delete list'
-    for (let deleter of deleters) {
-      deleter.addEventListener('click', removeList);
-    }
-
-//a function that deletes a list.
-    function removeList(event) {
-      confirm("are you sure you want to delete?");
-
-      //saves the event 'click'.
-      const target = event.target;
-
-      //catching closest father of 'deleter'.
-      const listPanel = target.closest('.panel');
-
-      //removing closest father of 'deleter'.
-      listPanel.remove();
-    }
-
-    hendelCardPlace(newList);
-    initListTitles();
-  }
-
-
-//function that creates a card in in parent panel.
-  function createACard() {
-
-    //target the correct list.
-    const target = event.target;
-
-    //target the parent of the lists.
-    const currentPanel = target.parentNode.parentNode;
-
-    //target right place to insert the new card.
-    const currentCardListHolder = currentPanel.querySelector(".panel-body");
-
-    //creating element that holds div creation.
-    const divHolder = document.createElement('div');
-
-    //giving divHolder style.
-    divHolder.className = "card";
-
-    //implementing divHolder into panel's body.
-    currentCardListHolder.appendChild(divHolder);
-
-    //creating button element with every card.
-    const creatingButton = document.createElement('button');
-
-    //giving button some style.
-    creatingButton.className += "btn btn-default btn-group-xs btn-position-style";
-
-    //implementing a button in every card.
-    divHolder.appendChild(creatingButton);
-
-    //inserting text to the button.
-    creatingButton.innerHTML = 'Edit card';
-
-    //putting eventlistener on 'edit card' button.
-    creatingButton.addEventListener('click', openModal);
-
-    //creating element that holds div creation.
-    const membersHolder = document.createElement('div');
-
-    //giving memberHolder style.
-    membersHolder.className += "btn-group btn-group-xs divMember";
-
-    //creating button element with every card.
-    const creatingMemberBtn = document.createElement('button');
-
-    //giving button members style.
-    creatingMemberBtn.className += "btn btn-default memberBtn";
-
-    //implementing a button in every div member.
-    membersHolder.appendChild(creatingMemberBtn);
-
-    // implementing div member into card.
-    divHolder.appendChild(membersHolder);
-
-  }
-
-  function openModal() {
-
-    //catching the class of modal.
-    const modalClass = document.querySelector('.modal-shown');
-
-    //turning modal style to block.
-    modalClass.style.display = 'block';
-
-    //catching 'close' buttons.
-    const closeButtons = document.querySelectorAll('.close-modal');
-
-    //putting eventlisteners on "close" buttons.
-    for (const closebutton of closeButtons) {
-      closebutton.addEventListener('click', function () {
-        modalClass.style.display = 'none';
-      });
-    }
-  }
-
-  function titleClickHandler(event) {
-    const target = event.target;
-
-    // Hide the clicked title
-    target.style.display = 'none';
-
-    // Show the input next to it
-    const inputElm = target.parentNode.querySelector('input');
-
-    inputElm.value = target.textContent;
-    inputElm.style.display = 'inline-block';
-    inputElm.focus();
-  }
-
-  function titleInputKeyHandler(event) {
-    const target = event.target;
-
-    // Catch Enter key only
-    if (event.keyCode === 13) {
-      // Take the value from the input
-      const value = target.value;
-
-      // Update the title with that value
-      const titleElm = target.parentNode.querySelector('span');
-
-      titleElm.innerHTML = value;
-
-      // Hide the input; Show the title
-      target.style.display = 'none';
-      titleElm.style.display = 'inline-block';
-    }
-  }
-
-  function initListTitles(targetList) {
-    const targetParent = targetList === undefined ? document : targetList;
-
-    const titleElms = targetParent.querySelectorAll('.panel-heading > span');
-
-    for (const title of titleElms) {
-      title.addEventListener('click', titleClickHandler);
-    }
-
-    const titleInputElms = targetParent.querySelectorAll('.panel-heading > input');
-
-    for (const titleInput of titleInputElms) {
-      titleInput.addEventListener('keydown', titleInputKeyHandler);
-    }
-  }
-
-// function addList(event) {
-//   const target = event.target;
-//
-//   // Create a list element
-//   const list = document.createElement('div');
-//
-//   list.className = 'list';
-//   list.innerHTML = listTemplate;
-//
-//   // Insert it at the end of the lists
-//   const main = target.closest('main');
-//
-//   main.insertBefore(list, target.parentNode);
-//
-//   initListTitles(list);
-// }
-
-
-// -------------------------------------------------------------
-
-//catching all header buttons
+  // divHolder.innerHTML = listTemplate;
+  //catching all header buttons
   const btns = document.querySelectorAll('.dropdown-toggle');
 
-
+  //inserting eventlistener to every button.
   for (let btn of btns) {
     btn.addEventListener("click", panelActionHendler);
   }
@@ -386,7 +231,6 @@ function addingAList(newList) {
     const divParent = currentBtn.closest('.dropdown');
 
     const ulMenu = divParent.querySelector('.dropdown-menu');
-
 
     ulMenu.classList.toggle('show');
   }
@@ -414,31 +258,210 @@ function addingAList(newList) {
     listPanel.remove();
   }
 
-// -------------------JSON--------
+  hendelCardPlace(newList);
+  initListTitles();
+}
 
-  function reqListener() {
-    const target = event.target;
-    JSON.parse(target.responseText);
 
-    let data = JSON.parse(target.response);
+//function that creates a card in in parent panel.
+function createACard() {
 
-    for (let list of data.board) {
+  //target the correct list.
+  const target = event.target;
 
-      addingAList(list);
+  //target the parent of the lists.
+  const currentPanel = target.parentNode.parentNode;
 
-    }
+  //target right place to insert the new card.
+  const currentCardListHolder = currentPanel.querySelector(".panel-body");
+
+  //creating element that holds div creation.
+  const divHolder = document.createElement('div');
+
+  //giving divHolder style.
+  divHolder.className = "card";
+
+  //implementing divHolder into panel's body.
+  currentCardListHolder.appendChild(divHolder);
+
+  //creating button element with every card.
+  const creatingButton = document.createElement('button');
+
+  //giving button some style.
+  creatingButton.className += "btn btn-default btn-group-xs btn-position-style";
+
+  //implementing a button in every card.
+  divHolder.appendChild(creatingButton);
+
+  //inserting text to the button.
+  creatingButton.innerHTML = 'Edit card';
+
+  //putting eventlistener on 'edit card' button.
+  creatingButton.addEventListener('click', openModal);
+
+  //creating element that holds div creation.
+  const membersHolder = document.createElement('div');
+
+  //giving memberHolder style.
+  membersHolder.className += "btn-group btn-group-xs divMember";
+
+  //creating button element with every card.
+  const creatingMemberBtn = document.createElement('button');
+
+  //giving button members style.
+  creatingMemberBtn.className += "btn btn-default memberBtn";
+
+  //implementing a button in every div member.
+  membersHolder.appendChild(creatingMemberBtn);
+
+  // implementing div member into card.
+  divHolder.appendChild(membersHolder);
+
+}
+
+//function that open or closes the modal.
+function openModal() {
+
+  //catching the class of modal.
+  const modalClass = document.querySelector('.modal-shown');
+
+  //turning modal style to block.
+  modalClass.style.display = 'block';
+
+  //catching 'close' buttons.
+  const closeButtons = document.querySelectorAll('.close-modal');
+
+  //putting eventlisteners on "close" buttons.
+  for (const closebutton of closeButtons) {
+    closebutton.addEventListener('click', function () {
+      modalClass.style.display = 'none';
+    });
+  }
+}
+
+
+function titleClickHandler(event) {
+  const target = event.target;
+
+  // Hide the clicked title
+  target.style.display = 'none';
+
+  // Show the input next to it
+  const inputElm = target.parentNode.querySelector('input');
+
+  inputElm.value = target.textContent;
+  inputElm.style.display = 'inline-block';
+  inputElm.focus();
+}
+
+function titleInputKeyHandler(event) {
+  const target = event.target;
+
+  // Catch Enter key only
+  if (event.keyCode === 13) {
+    // Take the value from the input
+    const value = target.value;
+
+    // Update the title with that value
+    const titleElm = target.parentNode.querySelector('span');
+
+    titleElm.innerHTML = value;
+
+    // Hide the input; Show the title
+    target.style.display = 'none';
+    titleElm.style.display = 'inline-block';
+  }
+}
+
+function initListTitles(targetList) {
+  const targetParent = targetList === undefined ? document : targetList;
+
+  const titleElms = targetParent.querySelectorAll('.panel-heading > span');
+
+  for (const title of titleElms) {
+    title.addEventListener('click', titleClickHandler);
   }
 
-  function getBoardData() {
+  const titleInputElms = targetParent.querySelectorAll('.panel-heading > input');
+
+  for (const titleInput of titleInputElms) {
+    titleInput.addEventListener('keydown', titleInputKeyHandler);
+  }
+}
+
+
+//catching all header buttons
+const btns = document.querySelectorAll('.dropdown-toggle');
+
+
+for (let btn of btns) {
+  btn.addEventListener("click", panelActionHendler);
+}
+
+/* When the user clicks on the button,
+ toggle between hiding and showing the dropdown content */
+function panelActionHendler() {
+  const currentBtn = event.target;
+
+  //catching every buttens div father
+  const divParent = currentBtn.closest('.dropdown');
+
+  const ulMenu = divParent.querySelector('.dropdown-menu');
+
+
+  ulMenu.classList.toggle('show');
+}
+
+//catching diffirent "Delete List" eachtime
+const deleters = document.querySelectorAll('.deleter');
+
+//adding eventlisteners on every 'delete list'
+for (let deleter of deleters) {
+  deleter.addEventListener('click', removeList);
+}
+
+//a function that deletes a list.
+function removeList(event) {
+  confirm("are you sure you want to delete?");
+
+  //saves the event 'click'.
+  const target = event.target;
+
+  //catching closest father of 'deleter'.
+  const listPanel = target.closest('.panel');
+
+  //removing closest father of 'deleter'.
+  listPanel.remove();
+}
+
+// -----ajax----------JSON--------
+
+function reqListener() {
+  const target = event.target;
+  JSON.parse(target.responseText);
+
+  let data = JSON.parse(target.response);
+
+  // for (let list of data.board) {
+  //
+  //   addingAList(list);
+  //
+  // }
+
+  appData.lists = data.board;
+  initPageByHash()
+
+}
+
+function getBoardData() {
 
   const oReq = new XMLHttpRequest();
   oReq.addEventListener("load", reqListener);
   oReq.open("GET", "assets/board.json");
   oReq.send();
-  }
-// ----------------------------------
+}
 
-getBoardData();
+
 
 
 
