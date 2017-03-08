@@ -1,7 +1,79 @@
 /**
  * Created by avishay on 27-Feb-17.
  */
+window.addEventListener('hashchange', (event) => {
+  console.log(window.location.hash);
 
+  const loction = window.location.hash;
+
+  if (loction === '#board'){
+
+    function reqListener() {
+      const target = event.target;
+      JSON.parse(target.responseText);
+
+      let data = JSON.parse(target.response);
+
+      for (let list of data.board) {
+
+        addingAList(list);
+
+      }
+    }
+
+    const oReq = new XMLHttpRequest();
+    oReq.addEventListener("load", reqListener);
+    oReq.open("GET", "assets/board.json");
+    oReq.send();
+  }
+
+  if (loction === '#Members'){
+
+    function reqListener() {
+      const target = event.target;
+      JSON.parse(target.responseText);
+
+
+      membersPage()
+
+    }
+
+    const oReq = new XMLHttpRequest();
+    oReq.addEventListener("load", reqListener);
+    oReq.open("GET", "assets/board.json");
+    oReq.send();
+  }
+
+});
+
+
+
+// -----------------members------------
+
+function membersPage(){
+
+
+  //creating div element.
+  const memebersMain = document.createElement('div');
+
+  //giving div membersMain style.
+  memebersMain.className += ("membersMainDiv");
+
+  //creating h2 has page heading;
+  const membersHeading  = document.createElement('h2');
+
+  membersHeading.innerHTML = 'Members';
+
+  //creating div membersPlate.
+  // const membersPlate = memebersMain.createElement('div');
+
+  //giving div membersPlate style.
+  // membersPlate.className += ("membersPlatedive");
+
+}
+
+membersPage();
+// ------------------------------------
 
 function addingAList(newList) {
 
@@ -367,3 +439,6 @@ function addingAList(newList) {
 // ----------------------------------
 
 getBoardData();
+
+
+

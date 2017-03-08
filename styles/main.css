@@ -87,6 +87,8 @@ main{
   margin: 10px;
   border-radius: 4px;
   overflow-y: auto;
+  overflow-x: hidden;
+
 }
 .btnAddAPanel{
   display: inline-block;
@@ -136,7 +138,7 @@ main{
   display: flex;
   flex-direction: row;
   width: 100%;
-  /*justify-content: flex-end;*/
+  justify-content: flex-end;
   height: 20px;
 }
 .memberBtn,
@@ -144,9 +146,8 @@ main{
 .memberBtn:active,
 .memberBtn:visited,
 .memberBtn:focus{
-  position: absolute;
-  left: 80%;
-  bottom: 10%;
+
+  margin-right: 5px;
   background-color: #204d74;
   color: white;
   height: 15px;
@@ -210,4 +211,11 @@ main{
   color: white;
 }
 
-
+.membersMainDiv{
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background-color: #D5D5D5;
+}
