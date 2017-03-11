@@ -7,7 +7,6 @@ const appData = {
   members: []
 };
 
-getBoardData();
 
 window.addEventListener('hashchange', () => {
   initPageByHash();
@@ -15,9 +14,6 @@ window.addEventListener('hashchange', () => {
 
 
 function initPageByHash() {
-  console.info('initPageByHash');
-
-  console.log(window.location.hash);
 
   const hash = window.location.hash;
   if (!hash) {
@@ -27,44 +23,29 @@ function initPageByHash() {
 
   if (hash === '#board') {
 
-    // target.classList.add('active');
+    for(let list of appData.lists)
 
-    function reqListener(event) {
-      const target = event.target;
-      JSON.parse(target.responseText);
+      addingAList(list);
 
-      let data = JSON.parse(target.response);
-
-      for (let list of data.board) {
-
-        addingAList(list);
-
-      }
-    }
-
-    const oReq = new XMLHttpRequest();
-    oReq.addEventListener("load", reqListener);
-    oReq.open("GET", "assets/board.json");
-    oReq.send();
   }
 
   if (hash === '#members') {
 
-    // target.classList.add('active');
+    membersPage()
 
-    function getMembersPage(event) {
-      const target = event.target;
-      JSON.parse(target.responseText);
-
-      membersPage()
+  }
+}
 
 
-    }
+function isLoadingDone() {
 
-    const oReq = new XMLHttpRequest();
-    oReq.addEventListener("load", getMembersPage);
-    oReq.open("GET", "assets/members.json");
-    oReq.send();
+  if(appData.lists.length && appData.members.length){
+
+    return true;
+  }
+
+  else {
+    return false;
   }
 }
 
@@ -72,13 +53,21 @@ function initPageByHash() {
 
 function membersPage() {
 
-  const html = `<h2>Members</h2>
-  <ul>
-    <li>  </li>
-    <li>  </li>
-    <li>  </li>
-  </ul>
-
+  const html = `
+    <div class="membersMainDiv">
+      <h2 class="membersH2">Members TasksBoard</h2>
+      <ul class="list-group membersUl">
+        <li class="list-group-item memberLi">gil tayar</li>
+        <li class="list-group-item memberLi">dima vishenevetsky</li>
+        <li class="list-group-item memberLi">alex ilyaev</li>
+        <li class="list-group-item memberLi">sponge bob</li>
+        <li class="list-group-item memberLastLi"> 
+            <label for="message-text" class="control-label label-style"></label>
+            <textarea class="form-control shortBoxes addNewMemberArea" placeholder="Add new member"></textarea>
+             <button type="button" class="btn btn-primary btn-group">Add</button>
+        </li>
+      </ul>
+    </div>
   `;
 
   //catching place that gets  div members.
@@ -86,23 +75,15 @@ function membersPage() {
 
   mainDiv.innerHTML = html;
 
+  //catching all members li.
+  const memberLi = document.querySelectorAll('.memberLi');
 
-  // //creating div element.
-  // const memebersMain = document.createElement('div');
-  //
-  // //giving div membersMain style.
-  // memebersMain.className += ("membersMainDiv");
-  //
-  //
-  // //inserting memberMain into mainDiv.
-  // mainDiv.innerHTML = memebersMain;
-  //
-  // //creating h2 has page heading;
-  // const membersHeading  = document.createElement('h2');
-  //
-  // membersHeading.innerHTML = 'Members';
-  //
-  // memebersMain.appendChild(membersHeading);
+  //createing edit button.
+  const memberEditBtn = document.createElement('button');
+
+  //inserting all member an edit button.
+  memberLi.appendChild(memberEditBtn);
+
 
 }
 
@@ -171,12 +152,10 @@ function addingAList(newList) {
   //element that creates new div.
   const divHolder = document.createElement('div');
 
-  //implementing new div in container.
+  //implementing new div in main.
   document.querySelector('main').appendChild(divHolder);
 
   const listTemplate = `
-  <div class="sub-main">
-    <div class="lisitsContainer" id="container">
       <div class="panel panel-default temp">  
         <div class="panel-heading panel-size">
           <input type="text" style="display: none">
@@ -201,19 +180,19 @@ function addingAList(newList) {
           <button onclick="createACard()" class="addACard">add a card...</button>
         </div>
       </div>
-  </div>
-</div>`
-    ;
+`;
 
-  // const newDiv = document.createElement('div');
 
-  newDiv.setAttribute("class","panel panel-default");
+  const newDiv = document.createElement('div');
+
+  // newDiv.setAttribute("class","panel panel-default");
 
   divHolder.appendChild(newDiv);
 
   newDiv.innerHTML = listTemplate;
 
   // divHolder.innerHTML = listTemplate;
+
   //catching all header buttons
   const btns = document.querySelectorAll('.dropdown-toggle');
 
@@ -261,6 +240,16 @@ function addingAList(newList) {
   hendelCardPlace(newList);
   initListTitles();
 }
+
+const addListBtn=`  
+  <button class="btnAddAPanel" onclick="addingAList()">
+    <span class="btnShaping"> add a panel </span>
+  </button>
+`;
+const main = document.querySelector('main');
+
+main.innerHTML = addListBtn;
+
 
 
 //function that creates a card in in parent panel.
@@ -412,10 +401,10 @@ function panelActionHendler() {
   ulMenu.classList.toggle('show');
 }
 
-//catching diffirent "Delete List" eachtime
+//catching diffirent "Delete List" eachtime.
 const deleters = document.querySelectorAll('.deleter');
 
-//adding eventlisteners on every 'delete list'
+//adding eventlisteners on every 'delete list'.
 for (let deleter of deleters) {
   deleter.addEventListener('click', removeList);
 }
@@ -436,32 +425,55 @@ function removeList(event) {
 
 // -----ajax----------JSON--------
 
-function reqListener() {
+function boardDataHendler(event) {
   const target = event.target;
   JSON.parse(target.responseText);
 
   let data = JSON.parse(target.response);
 
-  // for (let list of data.board) {
-  //
-  //   addingAList(list);
-  //
-  // }
-
   appData.lists = data.board;
-  initPageByHash()
 
+  if (isLoadingDone()) {
+
+    initPageByHash()
+
+  }
 }
 
 function getBoardData() {
 
   const oReq = new XMLHttpRequest();
-  oReq.addEventListener("load", reqListener);
+  oReq.addEventListener("load", boardDataHendler);
   oReq.open("GET", "assets/board.json");
   oReq.send();
 }
 
+function membersDataHendler(event) {
+  const target = event.target;
+  let data = JSON.parse(target.responseText);
+
+  appData.members = data.members;
+
+  if (isLoadingDone()) {
+
+    initPageByHash()
+
+  }
+}
+
+function getMembersData() {
+
+  const oReq = new XMLHttpRequest();
+  oReq.addEventListener("load", membersDataHendler);
+  oReq.open("GET", "assets/members.json");
+  oReq.send();
+
+}
 
 
+function getAppData() {
+  getBoardData();
+  getMembersData();
+}
 
-
+getAppData();
