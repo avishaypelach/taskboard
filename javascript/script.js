@@ -7,11 +7,9 @@ const appData = {
   members: []
 };
 
-
 window.addEventListener('hashchange', () => {
   initPageByHash();
 });
-
 
 function initPageByHash() {
 
@@ -35,7 +33,6 @@ function initPageByHash() {
 
   }
 }
-
 
 function isLoadingDone() {
 
@@ -143,9 +140,55 @@ function addingAList(newList) {
 
         //putting eventlistener on 'edit card' button.
         creatingButton.addEventListener('click', openModal);
+
+        if(obj.tasks.members > 0 ){
+
+          for (let member of obj.tasks){
+
+            member = tasks.members;
+
+            //creating element that holds div.
+            const membersHolder = document.createElement('div');
+
+            //giving memberHolder style.
+            membersHolder.className += "btn-group btn-group-xs divMember";
+
+            //creating button element with every card.
+            const creatingMemberBtn = document.createElement('button');
+
+            //giving button members style.
+            creatingMemberBtn.className += "btn btn-default memberBtn";
+
+            //implementing a button in every div member.
+            membersHolder.appendChild(creatingMemberBtn);
+
+            //inserting member initial into button.
+            creatingMemberBtn.appendChild(getInitials(member));
+
+            // implementing div member into card.
+            divHolder.appendChild(membersHolder);
+
+          }
+        }
       }
     }
+
+    //function that get initials.
+    function getInitials(member) {
+
+      const pieces = (member).split(" ");
+      let initials = "";
+
+      for(let x=0; x < pieces.length; x++)
+      {
+        initials += pieces [x].substring(0,1);
+      }
+      return (initials);
+    }
+
   }
+
+
 
   hendelListTitle(newList);
 
@@ -182,7 +225,6 @@ function addingAList(newList) {
       </div>
 `;
 
-
   const newDiv = document.createElement('div');
 
   // newDiv.setAttribute("class","panel panel-default");
@@ -213,7 +255,6 @@ function addingAList(newList) {
 
     ulMenu.classList.toggle('show');
   }
-
 
 //catching diffirent "Delete List" eachtime
   const deleters = document.querySelectorAll('.deleter');
@@ -251,8 +292,7 @@ const main = document.querySelector('main');
 main.innerHTML = addListBtn;
 
 
-
-//function that creates a card in in parent panel.
+//function that creates a card in parent panel.
 function createACard() {
 
   //target the correct list.
@@ -288,24 +328,6 @@ function createACard() {
   //putting eventlistener on 'edit card' button.
   creatingButton.addEventListener('click', openModal);
 
-  //creating element that holds div creation.
-  const membersHolder = document.createElement('div');
-
-  //giving memberHolder style.
-  membersHolder.className += "btn-group btn-group-xs divMember";
-
-  //creating button element with every card.
-  const creatingMemberBtn = document.createElement('button');
-
-  //giving button members style.
-  creatingMemberBtn.className += "btn btn-default memberBtn";
-
-  //implementing a button in every div member.
-  membersHolder.appendChild(creatingMemberBtn);
-
-  // implementing div member into card.
-  divHolder.appendChild(membersHolder);
-
 }
 
 //function that open or closes the modal.
@@ -327,7 +349,6 @@ function openModal() {
     });
   }
 }
-
 
 function titleClickHandler(event) {
   const target = event.target;
@@ -377,7 +398,6 @@ function initListTitles(targetList) {
     titleInput.addEventListener('keydown', titleInputKeyHandler);
   }
 }
-
 
 //catching all header buttons
 const btns = document.querySelectorAll('.dropdown-toggle');
@@ -469,7 +489,6 @@ function getMembersData() {
   oReq.send();
 
 }
-
 
 function getAppData() {
   getBoardData();
