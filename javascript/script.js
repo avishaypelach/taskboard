@@ -291,7 +291,6 @@ const main = document.querySelector('main');
 
 main.innerHTML = addListBtn;
 
-
 //function that creates a card in parent panel.
 function createACard() {
 
