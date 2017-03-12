@@ -7,6 +7,17 @@ const appData = {
   members: []
 };
 
+function findListByTitle(title) {
+  return appData.lists.find((list)=> list.title === title);
+}
+
+function findListById(id) {
+  return appData.lists.find((list)=> list.id === id);
+}
+
+
+
+
 window.addEventListener('hashchange', () => {
   initPageByHash();
 });
@@ -21,9 +32,22 @@ function initPageByHash() {
 
   if (hash === '#board') {
 
+    document.querySelector('main').innerHTML = '';
+
     for(let list of appData.lists)
 
       addingAList(list);
+
+
+    const addListBtn=`  
+      <button class="btnAddAPanel" onclick="addingAList()">
+        <span class="btnShaping"> add a panel </span>
+      </button>
+    `;
+    const main = document.querySelector('main');
+
+    //inserting panel btn to main.
+    main.innerHTML += addListBtn;
 
   }
 
@@ -46,7 +70,7 @@ function isLoadingDone() {
   }
 }
 
-//-----------------members------------
+//-----------------members-------------
 
 function membersPage() {
 
@@ -78,10 +102,6 @@ function membersPage() {
   //createing edit button.
   const memberEditBtn = document.createElement('button');
 
-  //inserting all member an edit button.
-  memberLi.appendChild(memberEditBtn);
-
-
 }
 
 // -----------------------------------
@@ -106,7 +126,6 @@ function addingAList(newList) {
 
       for (let task of obj.tasks) {
 
-        task = task.text;
 
         //catch the current panel.
         const currentPanel = newDiv.querySelector('.temp');
@@ -120,6 +139,9 @@ function addingAList(newList) {
         //giving divHolder style.
         divHolder.className = "card";
 
+        //giving every card an id.
+        divHolder.setAttribute('unique-id', uuid());
+
         //implementing divHolder into panel's body.
         currentCardListHolder.appendChild(divHolder);
 
@@ -130,7 +152,7 @@ function addingAList(newList) {
         creatingButton.className += "btn btn-default btn-group-xs btn-position-style";
 
         //inserting task into a card.
-        divHolder.innerHTML = task;
+        divHolder.innerHTML = task.text;
 
         //implementing a button in every card.
         divHolder.appendChild(creatingButton);
@@ -141,54 +163,51 @@ function addingAList(newList) {
         //putting eventlistener on 'edit card' button.
         creatingButton.addEventListener('click', openModal);
 
-        if(obj.tasks.members > 0 ){
+        //creating element that holds div.
+        const membersHolder = document.createElement('div');
 
-          for (let member of obj.tasks){
+        //giving memberHolder style.
+        membersHolder.className += "btn-group btn-group-xs divMember";
 
-            member = tasks.members;
+        function memberCreater() {
 
-            //creating element that holds div.
-            const membersHolder = document.createElement('div');
+          for (let member of task.members){
 
-            //giving memberHolder style.
-            membersHolder.className += "btn-group btn-group-xs divMember";
+              //creating button element with every card.
+              const MemberInitBtn = document.createElement('button');
 
-            //creating button element with every card.
-            const creatingMemberBtn = document.createElement('button');
+              //giving button members style.
+              MemberInitBtn.className += "btn btn-default memberBtn";
 
-            //giving button members style.
-            creatingMemberBtn.className += "btn btn-default memberBtn";
+              //implementing button in every div member.
+              membersHolder.appendChild(MemberInitBtn);
 
-            //implementing a button in every div member.
-            membersHolder.appendChild(creatingMemberBtn);
+              //inserting member initial into button.
+              MemberInitBtn.innerHTML += getInitials(member);
 
-            //inserting member initial into button.
-            creatingMemberBtn.appendChild(getInitials(member));
+              // implementing div member into card.
+              divHolder.appendChild(membersHolder);
 
-            // implementing div member into card.
-            divHolder.appendChild(membersHolder);
-
+            }
           }
-        }
+        memberCreater(obj);
       }
     }
 
     //function that get initials.
-    function getInitials(member) {
+    function getInitials(str) {
 
-      const pieces = (member).split(" ");
-      let initials = "";
+      const strArr = str.split(' ');
+      const twoWordArr = [];
+      for (const smallStr of strArr) {
+        const letter = smallStr[0].toUpperCase();
 
-      for(let x=0; x < pieces.length; x++)
-      {
-        initials += pieces [x].substring(0,1);
+        twoWordArr.push(letter);
       }
-      return (initials);
+      return twoWordArr.join('');
     }
 
   }
-
-
 
   hendelListTitle(newList);
 
@@ -196,7 +215,7 @@ function addingAList(newList) {
   const divHolder = document.createElement('div');
 
   //implementing new div in main.
-  document.querySelector('main').appendChild(divHolder);
+  document.querySelector('main').insertBefore(divHolder,document.querySelector('.btnAddAPanel'));
 
   const listTemplate = `
       <div class="panel panel-default temp">  
@@ -243,8 +262,7 @@ function addingAList(newList) {
     btn.addEventListener("click", panelActionHendler);
   }
 
-  /* When the user clicks on the button,
-   toggle between hiding and showing the dropdown content */
+  // When the user clicks on the button, toggle between hiding and showing the dropdown content.
   function panelActionHendler() {
     const currentBtn = event.target;
 
@@ -282,14 +300,7 @@ function addingAList(newList) {
   initListTitles();
 }
 
-const addListBtn=`  
-  <button class="btnAddAPanel" onclick="addingAList()">
-    <span class="btnShaping"> add a panel </span>
-  </button>
-`;
-const main = document.querySelector('main');
-
-main.innerHTML = addListBtn;
+dropdownEventListener();
 
 //function that creates a card in parent panel.
 function createACard() {
@@ -398,12 +409,16 @@ function initListTitles(targetList) {
   }
 }
 
+function dropdownEventListener () {
+
 //catching all header buttons
 const btns = document.querySelectorAll('.dropdown-toggle');
 
 
 for (let btn of btns) {
   btn.addEventListener("click", panelActionHendler);
+  }
+
 }
 
 /* When the user clicks on the button,
@@ -495,3 +510,7 @@ function getAppData() {
 }
 
 getAppData();
+
+
+uuid.v1(); // -> v1 UUID
+uuid.v4(); // -> v4 UUID
