@@ -16,8 +16,6 @@ function findListById(id) {
 }
 
 
-
-
 window.addEventListener('hashchange', () => {
   initPageByHash();
 });
@@ -39,7 +37,8 @@ function initPageByHash() {
       addingAList(list);
 
 
-    const addListBtn=`  
+
+    const addListBtn = `
       <button class="btnAddAPanel" onclick="addingAList()">
         <span class="btnShaping"> add a panel </span>
       </button>
@@ -48,7 +47,9 @@ function initPageByHash() {
 
     //inserting panel btn to main.
     main.innerHTML += addListBtn;
-
+    dropdownEventListener();
+    catchingDeleterBtn();
+    deleteListEvent();
   }
 
   if (hash === '#members') {
@@ -78,10 +79,7 @@ function membersPage() {
     <div class="membersMainDiv">
       <h2 class="membersH2">Members TasksBoard</h2>
       <ul class="list-group membersUl">
-        <li class="list-group-item memberLi">gil tayar</li>
-        <li class="list-group-item memberLi">dima vishenevetsky</li>
-        <li class="list-group-item memberLi">alex ilyaev</li>
-        <li class="list-group-item memberLi">sponge bob</li>
+      
         <li class="list-group-item memberLastLi"> 
             <label for="message-text" class="control-label label-style"></label>
             <textarea class="form-control shortBoxes addNewMemberArea" placeholder="Add new member"></textarea>
@@ -91,20 +89,55 @@ function membersPage() {
     </div>
   `;
 
+
   //catching place that gets  div members.
   const mainDiv = document.querySelector('main');
 
+  //inserting member div to main.
   mainDiv.innerHTML = html;
 
-  //catching all members li.
-  const memberLi = document.querySelectorAll('.memberLi');
+  //catching membersul.
+  const memberUl = document.querySelector('.membersUl');
 
-  //createing edit button.
-  const memberEditBtn = document.createElement('button');
+  //catching li.
+  const memberLastLi = document.querySelector('.memberLastLi');
+
+  appData.members.forEach((member) =>{
+
+    //catching all members li.
+    const memberLi = createElement('li', ['list-group-item','memberLi'], memberUl);
+
+    //catching id from appdata.
+    memberLi.setAttribute('unique-id', member.id);
+
+    //inserting name from appdata to everymemberLi.
+    memberLi.textContent = member.name;
+
+    //inserting every new li after 'add member btn'.
+    memberUl.insertBefore(memberLi , memberLastLi);
+
+    //creating member edit button.
+    const editBtn = createElement('button',['btn', 'btn-primary','btn-group' ,'editBtn'],memberLi);
+
+    editBtn.textContent = 'Edit';
+
+    //creating member delete button.
+    const deleteBtn = createElement('button',['btn','delete-card-style','deleteBtn'],memberLi);
+
+    deleteBtn.textContent = 'Delete';
+  });
 
 }
 
-// -----------------------------------
+function hendelMemberId() {
+
+}
+
+function createMember() {
+
+}
+
+// -------------------Board----------------------
 
 function addingAList(newList) {
 
@@ -174,10 +207,10 @@ function addingAList(newList) {
           for (let member of task.members){
 
               //creating button element with every card.
-              const MemberInitBtn = document.createElement('button');
+              const MemberInitBtn = document.createElement('span');
 
               //giving button members style.
-              MemberInitBtn.className += "btn btn-default memberBtn";
+              MemberInitBtn.className += "memberSpan";
 
               //implementing button in every div member.
               membersHolder.appendChild(MemberInitBtn);
@@ -274,13 +307,7 @@ function addingAList(newList) {
     ulMenu.classList.toggle('show');
   }
 
-//catching diffirent "Delete List" eachtime
-  const deleters = document.querySelectorAll('.deleter');
 
-//adding eventlisteners on every 'delete list'
-  for (let deleter of deleters) {
-    deleter.addEventListener('click', removeList);
-  }
 
 //a function that deletes a list.
   function removeList(event) {
@@ -300,7 +327,15 @@ function addingAList(newList) {
   initListTitles();
 }
 
-dropdownEventListener();
+function  deleteListEvent() {
+  //catching diffirent "Delete List" eachtime
+  const deleters = document.querySelectorAll('.deleter');
+
+//adding eventlisteners on every 'delete list'
+  for (let deleter of deleters) {
+    deleter.addEventListener('click', removeList);
+  }
+}
 
 //function that creates a card in parent panel.
 function createACard() {
@@ -360,6 +395,28 @@ function openModal() {
   }
 }
 
+//that function creates elemnt by tagname className and parent.
+function createElement(tagName, className, parent) {
+
+  const element = document.createElement(tagName);
+
+  if (className !== undefined) {
+    let classesStr = '';
+    className.forEach((e) => {
+      classesStr += ' ' + e;
+    });
+    element.className = classesStr;
+
+  }
+
+  if (parent !== undefined) {
+    parent.appendChild(element);
+
+  }
+
+  return element;
+}
+
 function titleClickHandler(event) {
   const target = event.target;
 
@@ -411,18 +468,15 @@ function initListTitles(targetList) {
 
 function dropdownEventListener () {
 
-//catching all header buttons
-const btns = document.querySelectorAll('.dropdown-toggle');
+  //catching all header buttons
+  const btns = document.querySelectorAll('.dropdown-toggle');
 
-
-for (let btn of btns) {
-  btn.addEventListener("click", panelActionHendler);
+  for (let btn of btns) {
+    btn.addEventListener("click", panelActionHendler);
   }
-
 }
 
-/* When the user clicks on the button,
- toggle between hiding and showing the dropdown content */
+// When the user clicks on the button, toggle between hiding and showing the dropdown content
 function panelActionHendler() {
   const currentBtn = event.target;
 
@@ -435,15 +489,18 @@ function panelActionHendler() {
   ulMenu.classList.toggle('show');
 }
 
+function  catchingDeleterBtn() {
+
 //catching diffirent "Delete List" eachtime.
-const deleters = document.querySelectorAll('.deleter');
+  const deleters = document.querySelectorAll('.deleter');
 
 //adding eventlisteners on every 'delete list'.
-for (let deleter of deleters) {
-  deleter.addEventListener('click', removeList);
+  for (let deleter of deleters) {
+    deleter.addEventListener('click', removeList);
+  }
 }
 
-//a function that deletes a list.
+//function that deletes a list.
 function removeList(event) {
   confirm("are you sure you want to delete?");
 
@@ -455,6 +512,16 @@ function removeList(event) {
 
   //removing closest father of 'deleter'.
   listPanel.remove();
+}
+
+// ------------general functions-------
+
+function addEventListeners(elements, arrayOfEvents, eventListener) {
+  for (const element of elements) {
+    for (const event of arrayOfEvents) {
+      element.addEventListener(event, eventListener);
+    }
+  }
 }
 
 // -----ajax----------JSON--------

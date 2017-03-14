@@ -138,16 +138,18 @@ main{
   justify-content: flex-end;
   height: 20px;
 }
-.memberBtn,
-.memberBtn:hover,
-.memberBtn:active,
-.memberBtn:visited,
-.memberBtn:focus{
+.memberSpan,
+.memberSpan:hover,
+.memberSpan:active,
+.memberSpan:visited,
+.memberSpan:focus{
   margin-right: 5px;
   background-color: #204d74;
   color: white;
   height: 15px;
   width: 10%;
+  font-size: 1rem;
+  padding: 0 2px;
 }
 
 .card:hover .btn-position-style{
@@ -226,7 +228,7 @@ main{
   margin-left: 20px;
 }
 
-.membersUl li{
+.membersUl .memberLi{
   text-transform: capitalize;
 }
 
@@ -242,3 +244,21 @@ main{
   flex-direction: row;
   flex-flow: row;
 }
+
+.editBtn{
+  padding: 5px 15px;
+  margin-left: 10px;
+  display: none;
+}
+
+.deleteBtn{
+  margin:0 0 0 10px;
+  display: none;
+  padding: 5px 15px;
+}
+
+.memberLi:hover .editBtn,
+.memberLi:hover .deleteBtn{
+  display: inline-block;
+}
+
