@@ -85,7 +85,7 @@ main{
   border-radius: 4px;
   overflow-y: auto;
   overflow-x: hidden;
-
+  padding: 15px 6px;
 }
 .btnAddAPanel{
   display: inline-block;
@@ -181,7 +181,6 @@ main{
 .label-style{
   width: 20%;
 }
-
 
 .shortBoxes{
   width: 100%;

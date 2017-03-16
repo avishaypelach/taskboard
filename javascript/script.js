@@ -89,7 +89,6 @@ function membersPage() {
     </div>
   `;
 
-
   //catching place that gets  div members.
   const mainDiv = document.querySelector('main');
 
@@ -116,25 +115,41 @@ function membersPage() {
     //inserting every new li after 'add member btn'.
     memberUl.insertBefore(memberLi , memberLastLi);
 
+
     //creating member edit button.
     const editBtn = createElement('button',['btn', 'btn-primary','btn-group' ,'editBtn'],memberLi);
 
+    //putting event listener on edit btn.
+    editBtn.addEventListener('click', showBtns);
+
     editBtn.textContent = 'Edit';
+
 
     //creating member delete button.
     const deleteBtn = createElement('button',['btn','delete-card-style','deleteBtn'],memberLi);
 
+    //putting event listener on delete btn.
+    deleteBtn.addEventListener('click', showBtns);
+
     //insert text to bottun.
     deleteBtn.textContent = 'Delete';
+
 
     //creating member delete button.
     const cancelBtn = createElement('button',['btn','delete-card-style','cancelBtn'],memberLi);
 
+    //putting event listener on cancel btn.
+    cancelBtn.addEventListener('click', showBtns);
+
     //insert text to bottun.
     cancelBtn.textContent = 'Cancel';
 
+
     //creating member delete button.
     const saveBtn = createElement('button',['btn','delete-card-style','saveBtn'],memberLi);
+
+    //putting event listener on save btn.
+    saveBtn.addEventListener('click', showBtns);
 
     //insert text to bottun.
     saveBtn.textContent = 'Save'
@@ -143,12 +158,26 @@ function membersPage() {
   addEventLintenerNewMemberBtn();
 }
 
+function showBtns(event) {
+
+  const target = event.target;
+
+  console.info(target);
+
+  const currentLi = target.closest.li;
+
+  for (let btn of currentLi) {
+
+    currentLi.classList.toggel('show');
+
+  }
+}
 function addEventLintenerNewMemberBtn() {
   //catching btn at add new member page.
   const newMemberAreaBtn = document.querySelector('.memberNewAreaBtn');
 
   //adding event listeners on the the task area.
-  // addEventListeners(newMemberArea, ['click', 'keydown'], saveTextNewMember);
+  // addEventListeners(newMemberArea, ['click', 'keypress'], saveTextNewMember);
 
   newMemberAreaBtn.addEventListener('click', saveTextNewMember);
 
@@ -181,9 +210,7 @@ function createMember() {
 }
 
 function saveTextNewMember(event) {
-  // const target = event.target;
 
-  // Catch Enter key only
   if (event.type === 'click'){
 
     createMember()
@@ -195,6 +222,8 @@ function saveTextNewMember(event) {
 
   }
 }
+
+
 // -------------------Board----------------------
 
   function addingAList(newList) {
