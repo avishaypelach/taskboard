@@ -262,3 +262,17 @@ main{
   display: inline-block;
 }
 
+.cancelBtn{
+  margin:0 0 0 10px;
+  padding: 5px 15px;
+  background-color: #888888;
+  display: none;
+}
+
+
+.saveBtn{
+  margin:0 0 0 10px;
+  padding: 5px 15px;
+  background-color: limegreen;
+  display: none;
+}
