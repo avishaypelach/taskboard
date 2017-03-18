@@ -36,8 +36,6 @@ function initPageByHash() {
 
       addingAList(list);
 
-
-
     const addListBtn = `
       <button class="btnAddAPanel" onclick="addingAList()">
         <span class="btnShaping"> add a panel </span>
@@ -48,8 +46,11 @@ function initPageByHash() {
     //inserting panel btn to main.
     main.innerHTML += addListBtn;
     dropdownEventListener();
-    catchingDeleterBtn();
-    deleteListEvent();
+    puttingEventListenersOnDeleteListBtn();
+    initListTitles();
+    addEventListenerEditClick();
+    addEventListnerDeleteCard();
+    addEventListnerSaveCard();
   }
 
   if (hash === '#members') {
@@ -109,15 +110,21 @@ function membersPage() {
     //catching id from appdata.
     memberLi.setAttribute('unique-id', member.id);
 
+    //creating input next member name holder.
+    const memberInput = createElement('input',['memberInput'],memberLi);
+
+    //creating span where member name will be.
+    const memberNameHolder = createElement('span',['memberNameHolder'],memberLi);
+
     //inserting name from appdata to everymemberLi.
-    memberLi.textContent = member.name;
+    memberNameHolder.textContent = member.name;
 
     //inserting every new li after 'add member btn'.
     memberUl.insertBefore(memberLi , memberLastLi);
 
 
     //creating member edit button.
-    const editBtn = createElement('button',['btn', 'btn-primary','btn-group' ,'editBtn'],memberLi);
+    const editBtn = createElement('button',['btn', 'btn-primary','btn-group' ,'editBtn','seen'],memberLi);
 
     //putting event listener on edit btn.
     editBtn.addEventListener('click', showBtns);
@@ -126,7 +133,7 @@ function membersPage() {
 
 
     //creating member delete button.
-    const deleteBtn = createElement('button',['btn','delete-card-style','deleteBtn'],memberLi);
+    const deleteBtn = createElement('button',['btn','delete-card-style','deleteBtn','seen'],memberLi);
 
     //putting event listener on delete btn.
     deleteBtn.addEventListener('click', showBtns);
@@ -161,17 +168,72 @@ function membersPage() {
 function showBtns(event) {
 
   const target = event.target;
+  console.info(target.textContent);
 
-  console.info(target);
+  const saveBtn = event.target.closest('li').querySelector('.saveBtn');
 
-  const currentLi = target.closest.li;
+  const cancelBtn = event.target.closest('li').querySelector('.cancelBtn');
 
-  for (let btn of currentLi) {
+  const editBtn = event.target.closest('li').querySelector('.editBtn');
 
-    currentLi.classList.toggel('show');
+  const deleteBtn = event.target.closest('li').querySelector('.deleteBtn');
+
+  if (target.textContent === 'Edit') {
+
+    saveBtn.style.display = ('inline-block');
+
+    cancelBtn.style.display = ('inline-block');
+
+    editBtn.style.display = ('none');
+
+    deleteBtn.style.display = ('none');
+
+    editingMember(target);
+  }
+
+  if (target.textContent === 'Cancel') {
+
+    saveBtn.style.display = ('none');
+
+    cancelBtn.style.display = ('none');
+
+    editBtn.style.display = ('inline-block');
+
+    deleteBtn.style.display = ('inline-block');
+
+    const memberLi = cancelBtn.closest('li');
+
+    const memberInput = memberLi.querySelector('.memberLi > input');
+
+    memberInput.style.display = 'none';
+
+    const memberSpan = memberLi.querySelector('.memberLi > span');
+
+    memberSpan.style.display = 'block';
 
   }
+
+  if (target.textContent === 'Save') {
+
+      saveMember(target);
+    saveBtn.style.display = ('inline-block');
+
+    cancelBtn.style.display = ('inline-block');
+
+    editBtn.style.display = ('none');
+
+    deleteBtn.style.display = ('none');
+
+    }
+
+  if (target.textContent === 'Delete'){
+
+    deleteMember(target);
+
+  }
+
 }
+
 function addEventLintenerNewMemberBtn() {
   //catching btn at add new member page.
   const newMemberAreaBtn = document.querySelector('.memberNewAreaBtn');
@@ -211,33 +273,76 @@ function createMember() {
 
 function saveTextNewMember(event) {
 
-  if (event.type === 'click'){
+  if (event.type === 'click'|| event.keyCode === 13){
 
     createMember()
-  }
-
-  if (event.keyCode === 13) {
-
-    createMember()
-
   }
 }
 
+function editingMember(target) {
+
+  const memberLi = target.closest('li');
+
+  const memberSpan = memberLi.querySelector('.memberLi > span');
+
+  memberSpan.style.display = 'none';
+
+  spanValue = memberSpan.textContent;
+
+  const memberInput = memberLi.querySelector('.memberLi > input');
+
+  memberInput.style.display = 'block';
+
+  memberInput.value = spanValue;
+  memberInput.focus();
+
+}
+
+function saveMember(target){
+
+  const memberLi = target.closest('li');
+
+  const memberInput = memberLi.querySelector('.memberLi > input');
+
+  memberInput.style.display = 'none';
+
+  inputValue = memberInput.value;
+
+  console.info(inputValue);
+
+  const memberSpan = memberLi.querySelector('.memberLi > span');
+
+  memberSpan.style.display = 'block';
+
+  memberSpan.innerHTML = inputValue;
+
+}
+
+function deleteMember(target) {
+
+  const memberLi = target.closest('li');
+
+  memberLiId = memberLi.getAttribute('unique-id');
+
+  for (let i = 0; i < appData.members.length; i++){
+
+    if (memberLiId === appData.members[i].id){
+      appData.members.splice(i, 1);
+      membersPage();
+    }
+  }
+
+}
 
 // -------------------Board----------------------
 
   function addingAList(newList) {
 
-    listTitle = newList || 'New List';
 
-    function hendelListTitle(obj) {
-
-      if (obj !== undefined) {
-        return listTitle = obj.title;
-      }
-      else {
-        return listTitle = 'New List';
-      }
+    if (newList === undefined) {
+      const lst = { id: 'New List', title: 'New List', tasks: [] };
+      appData.lists.push(lst);
+      initPageByHash();
     }
 
     function hendelCardPlace(obj) {
@@ -259,8 +364,12 @@ function saveTextNewMember(event) {
           //giving divHolder style.
           divHolder.className = "card";
 
+          // allocate id if not exist
+          if (task.id === undefined)
+              task.id = uuid();
+
           //giving every card an id.
-          divHolder.setAttribute('unique-id', uuid());
+          divHolder.setAttribute('unique-id', task.id);
 
           //implementing divHolder into panel's body.
           currentCardListHolder.appendChild(divHolder);
@@ -269,7 +378,7 @@ function saveTextNewMember(event) {
           const creatingButton = document.createElement('button');
 
           //giving every created button some style.
-          creatingButton.className += "btn btn-default btn-group-xs btn-position-style";
+          creatingButton.className += "btn btn-default btn-group-xs btn-position-style edit-card-btn";
 
           //inserting task into a card.
           divHolder.innerHTML = task.text;
@@ -280,8 +389,7 @@ function saveTextNewMember(event) {
           //inserting text to the button.
           creatingButton.innerHTML = 'Edit card';
 
-          //putting eventlistener on 'edit card' button.
-          creatingButton.addEventListener('click', openModal);
+
 
           //creating element that holds div.
           const membersHolder = document.createElement('div');
@@ -292,6 +400,14 @@ function saveTextNewMember(event) {
           function memberCreater() {
 
             for (let member of task.members) {
+
+              // check if member exist in member list
+              let found = false;
+              for (let m of appData.members)
+                if (m.name === member)
+                    found = true;
+
+              if (!found) break;
 
               //creating button element with every card.
               const MemberInitBtn = document.createElement('span');
@@ -330,10 +446,11 @@ function saveTextNewMember(event) {
 
     }
 
-    hendelListTitle(newList);
 
     //element that creates new div.
     const divHolder = document.createElement('div');
+    divHolder.className = 'card-list';
+    divHolder.setAttribute('list-id', newList.id);
 
     //implementing new div in main.
     document.querySelector('main').insertBefore(divHolder, document.querySelector('.btnAddAPanel'));
@@ -341,8 +458,8 @@ function saveTextNewMember(event) {
     const listTemplate = `
       <div class="panel panel-default temp">  
         <div class="panel-heading panel-size">
-          <input type="text" style="display: none">
-          <span class="newList">${listTitle}</span>
+          <input type="text" style="display:none">
+          <span class="newList">`+ newList.title +`</span>
 
           <div class="dropdown">
             <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
@@ -360,20 +477,16 @@ function saveTextNewMember(event) {
         </div>
 
         <div class="panel-footer panel-size">
-          <button onclick="createACard()" class="addACard">add a card...</button>
+          <button onclick="createACard('`+ newList.id + `')" class="addACard">add a card...</button>
         </div>
       </div>
 `;
 
     const newDiv = document.createElement('div');
 
-    // newDiv.setAttribute("class","panel panel-default");
-
     divHolder.appendChild(newDiv);
 
     newDiv.innerHTML = listTemplate;
-
-    // divHolder.innerHTML = listTemplate;
 
     //catching all header buttons
     const btns = document.querySelectorAll('.dropdown-toggle');
@@ -395,81 +508,92 @@ function saveTextNewMember(event) {
       ulMenu.classList.toggle('show');
     }
 
-
-//a function that deletes a list.
-    function removeList(event) {
-      confirm("are you sure you want to delete?");
-
-      //saves the event 'click'.
-      const target = event.target;
-
-      //catching closest father of 'deleter'.
-      const listPanel = target.closest('.panel');
-
-      //removing closest father of 'deleter'.
-      listPanel.remove();
-    }
-
     hendelCardPlace(newList);
     initListTitles();
   }
 
-  function deleteListEvent() {
-    //catching diffirent "Delete List" eachtime
-    const deleters = document.querySelectorAll('.deleter');
+  //a function that deletes a list.
+  function removeList(event) {
 
-//adding eventlisteners on every 'delete list'
-    for (let deleter of deleters) {
-      deleter.addEventListener('click', removeList);
+  confirm("are you sure you want to delete ${``}?");
+
+  console.info(event.target);
+  //saves the event 'click'.
+  const target = event.target;
+
+  //catching closest father of 'deleter'.
+  const listPanel = target.closest('.panel');
+
+  //removing closest father of 'deleter'.
+  listPanel.remove();
+
+}
+
+  //function that creates a card in parent panel.
+  function createACard(listId) {
+    console.log(event);
+    const newCard = {
+      id: uuid(),
+      text: "new card",
+      members: []
+    };
+
+    for(let list in appData.lists) {
+      if (appData.lists[list].id === listId) {
+        appData.lists[list].tasks.push(newCard);
+        initPageByHash();
+      }
     }
-  }
 
-//function that creates a card in parent panel.
-  function createACard() {
-
-    //target the correct list.
-    const target = event.target;
-
-    //target the parent of the lists.
-    const currentPanel = target.parentNode.parentNode;
-
-    //target right place to insert the new card.
-    const currentCardListHolder = currentPanel.querySelector(".panel-body");
-
-    //creating element that holds div creation.
-    const divHolder = document.createElement('div');
-
-    //giving divHolder style.
-    divHolder.className = "card";
-
-    //implementing divHolder into panel's body.
-    currentCardListHolder.appendChild(divHolder);
-
-    //creating button element with every card.
-    const creatingButton = document.createElement('button');
-
-    //giving button some style.
-    creatingButton.className += "btn btn-default btn-group-xs btn-position-style";
-
-    //implementing a button in every card.
-    divHolder.appendChild(creatingButton);
-
-    //inserting text to the button.
-    creatingButton.innerHTML = 'Edit card';
-
-    //putting eventlistener on 'edit card' button.
-    creatingButton.addEventListener('click', openModal);
 
   }
 
-//function that open or closes the modal.
-  function openModal() {
+  function openModal(event) {
 
-    //catching the class of modal.
-    const modalClass = document.querySelector('.modal-shown');
+    const cardId = event.target.closest('div').getAttribute('unique-id');
+
+    let card;
+    let listTitle;
+
+    // find card
+    for (const list of appData.lists)
+        for (const task of list.tasks) {
+          if (task.id == cardId)
+          {
+            card = task;
+            listTitle = list.title;
+          }
+
+        }
+
+    let editModal = document.querySelector('.edit-card-modal');
+    editModal.setAttribute('card-id',cardId);
+    let cardText = document.querySelector('.edit-modal-card-text');
+    let cardMembers = document.querySelector('.edit-modal-members');
+    let cardList = document.querySelector('.edit-modal-list');
+
+    cardText.value = card.text;
+
+    cardMembers.innerHTML = '';
+    for (const member of appData.members) {
+      let isMemberOnCard = '';
+      for (const memberInCard of card.members) {
+        if (memberInCard === member.name)
+          isMemberOnCard = 'checked'
+      }
+
+      cardMembers.innerHTML += '<label><input type="checkbox" value="' + member.name + '" name="members"' + isMemberOnCard + '>' + member.name + '</label>';
+    }
+    cardList.innerHTML = '';
+    for (const list of appData.lists) {
+      cardList.innerHTML += '<option>'+ list.title + '</option>'
+    }
+
+    console.log(listTitle);
+    cardList.value = listTitle;
 
     //turning modal style to block.
-    modalClass.style.display = 'block';
+    editModal.style.display = 'block';
 
     //catching 'close' buttons.
     const closeButtons = document.querySelectorAll('.close-modal');
@@ -477,32 +601,75 @@ function saveTextNewMember(event) {
     //putting eventlisteners on "close" buttons.
     for (const closebutton of closeButtons) {
       closebutton.addEventListener('click', function () {
-        modalClass.style.display = 'none';
+        editModal.style.display = 'none';
       });
     }
   }
 
-//that function creates elemnt by tagname className and parent.
-  function createElement(tagName, className, parent) {
+  function deleteCard(event) {
+    let editModal = document.querySelector('.edit-card-modal');
+    const cardId = editModal.getAttribute('card-id');
 
-    const element = document.createElement(tagName);
+    // find card
+    for (const list of appData.lists)
+      for (let task in list.tasks) {
+        if (list.tasks[task].id === cardId){
+          list.tasks.splice(task,1);
+          console.log('found delete',cardId);
+        }
+      }
 
-    if (className !== undefined) {
-      let classesStr = '';
-      className.forEach((e) => {
-        classesStr += ' ' + e;
-      });
-      element.className = classesStr;
-
-    }
-
-    if (parent !== undefined) {
-      parent.appendChild(element);
-
-    }
-
-    return element;
+    editModal.style.display = 'none';
+    initPageByHash('');
   }
+
+
+function saveCard(event) {
+
+  let editModal = document.querySelector('.edit-card-modal');
+  const cardId = editModal.getAttribute('card-id');
+
+  let cardText = document.querySelector('.edit-modal-card-text');
+  let cardMembers = document.querySelector('.edit-modal-members');
+
+
+
+  // find card
+  for (const list of appData.lists)
+    for (let task in list.tasks) {
+      if (list.tasks[task].id === cardId){
+        console.log(list.tasks[task].text,cardText.value );
+        list.tasks[task].text = cardText.value ;
+
+        let members = [];
+        for (let i=0;i<document.getElementsByName('members').length;i++){
+          if (document.getElementsByName('members')[i].checked)
+            members.push(document.getElementsByName('members')[i].value);
+        }
+        list.tasks[task].members = members;
+
+        const toList = document.getElementById("change-list").value;
+
+        debugger;
+        if (list.title != toList) {
+          for (let listx of appData.lists) {
+            if (listx.title === toList) {
+              listx.tasks.push(list.tasks[task]);
+            }
+          }
+          list.tasks.splice(task,1);
+        }
+
+
+
+      }
+  }
+
+
+
+  editModal.style.display = 'none';
+  initPageByHash();
+}
 
   function titleClickHandler(event) {
     const target = event.target;
@@ -528,6 +695,11 @@ function saveTextNewMember(event) {
 
       // Update the title with that value.
       const titleElm = target.parentNode.querySelector('span');
+
+      for (let list in appData.lists){
+        if (appData.lists[list].title == titleElm.innerHTML)
+          appData.lists[list].title = value;
+      }
 
       titleElm.innerHTML = value;
 
@@ -577,30 +749,38 @@ function saveTextNewMember(event) {
     ulMenu.classList.toggle('show');
   }
 
-  function catchingDeleterBtn() {
+  function puttingEventListenersOnDeleteListBtn() {
 
-//catching diffirent "Delete List" eachtime.
+  //catching diffirent "Delete List" eachtime.
     const deleters = document.querySelectorAll('.deleter');
 
-//adding eventlisteners on every 'delete list'.
+  //adding eventlisteners on every 'delete list'.
     for (let deleter of deleters) {
       deleter.addEventListener('click', removeList);
     }
   }
 
-//function that deletes a list.
-  function removeList(event) {
-    confirm("are you sure you want to delete?");
-
-    //saves the event 'click'.
-    const target = event.target;
-
-    //catching closest father of 'deleter'.
-    const listPanel = target.closest('.panel');
-
-    //removing closest father of 'deleter'.
-    listPanel.remove();
+  function addEventListenerEditClick() {
+    const editButtons = document.querySelectorAll('.edit-card-btn');
+    for (let i = 0; i < editButtons.length; i++) {
+      editButtons[i].addEventListener('click', openModal, false);
+    }
   }
+
+  function addEventListnerDeleteCard() {
+    const editButtons = document.querySelectorAll('.edit-modal-delete');
+    for (let i = 0; i < editButtons.length; i++) {
+      editButtons[i].addEventListener('click', deleteCard, false);
+    }
+  }
+
+  function addEventListnerSaveCard() {
+    const saveButtons = document.querySelectorAll('.edit-modal-save');
+    for (let i = 0; i < saveButtons.length; i++) {
+      saveButtons[i].addEventListener('click', saveCard, false);
+    }
+  }
+
 
 // ------------general functions-------
 
@@ -611,6 +791,29 @@ function saveTextNewMember(event) {
       }
     }
   }
+
+
+  //that function creates elemnt by tagname className and parent.
+  function createElement(tagName, className, parent) {
+
+  const element = document.createElement(tagName);
+
+  if (className !== undefined) {
+    let classesStr = '';
+    className.forEach((e) => {
+      classesStr += ' ' + e;
+    });
+    element.className = classesStr;
+
+  }
+
+  if (parent !== undefined) {
+    parent.appendChild(element);
+
+  }
+
+  return element;
+}
 
 // -----ajax----------JSON--------
 
@@ -665,6 +868,8 @@ function saveTextNewMember(event) {
   }
 
   getAppData();
+
+
 
 
 uuid.v1(); // -> v1 UUID

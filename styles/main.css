@@ -76,6 +76,7 @@ main{
   max-height: calc(93vh - 120px);
   overflow-y: auto;
 }
+
 .card{
   position: relative;
   height: 120px;
@@ -85,7 +86,7 @@ main{
   border-radius: 4px;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 15px 6px;
+  padding: 20px 6px;
 }
 .btnAddAPanel{
   display: inline-block;
@@ -130,8 +131,7 @@ main{
 }
 
 .divMember{
-  position: absolute;
-  bottom: 0;
+
   display: flex;
   flex-direction: row;
   width: 100%;
@@ -146,10 +146,11 @@ main{
   margin-right: 5px;
   background-color: #204d74;
   color: white;
-  height: 15px;
-  width: 10%;
+  height: 19px;
+  width: 22px;
   font-size: 1rem;
-  padding: 0 2px;
+  font-weight: 700;
+  padding: 3px 4px;
 }
 
 .card:hover .btn-position-style{
@@ -229,13 +230,26 @@ main{
 
 .membersUl .memberLi{
   text-transform: capitalize;
+  display: flex;
+  align-items: center;
+  padding:  0 15px;
+  height: 45px;
 }
 
- ul .addNewMemberArea{
+ ul .addNewMemberArea {
    width: 40%;
    height: 35px;
    display: inline-block;
+ }
+
+.memberNameHolder{
+  display: block;
+  width: 60%;
 }
+.memberInput{
+  display: none;
+}
+
 .memberLastLi{
   display: flex;
   align-content: flex-start;
@@ -243,23 +257,27 @@ main{
   flex-direction: row;
   flex-flow: row;
 }
-
+.editBtn:active,
+.editBtn:focus,
+.editBtn:hover,
 .editBtn{
   padding: 5px 15px;
   margin-left: 10px;
   display: none;
+  background-color: #ffcc00;
+  border-color: #e6b800;
 }
 
 .deleteBtn{
+  padding: 5px 15px;
   margin:0 0 0 10px;
   display: none;
-  padding: 5px 15px;
 }
 
-.memberLi:hover .editBtn,
-.memberLi:hover .deleteBtn{
-  display: inline-block;
-}
+/*.memberLi:hover .editBtn,*/
+/*.memberLi:hover .deleteBtn{*/
+  /*display: inline-block;*/
+/*}*/
 
 .cancelBtn{
   margin:0 0 0 10px;
@@ -268,10 +286,13 @@ main{
   display: none;
 }
 
-
 .saveBtn{
-  margin:0 0 0 10px;
   padding: 5px 15px;
+  margin:0 0 0 10px;
   background-color: limegreen;
   display: none;
+}
+
+.memberLi:hover .seen{
+  display: inline-block;
 }
