@@ -296,3 +296,7 @@ main{
 .memberLi:hover .seen{
   display: inline-block;
 }
+
+#board-link a.active {
+  color: blue;
+}

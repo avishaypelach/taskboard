@@ -30,6 +30,9 @@ function initPageByHash() {
 
   if (hash === '#board') {
 
+    document.querySelector('#board-link').className  = 'active';
+    document.querySelector('#member-link').className  = '';
+
     document.querySelector('main').innerHTML = '';
 
     for(let list of appData.lists)
@@ -54,7 +57,8 @@ function initPageByHash() {
   }
 
   if (hash === '#members') {
-
+    document.querySelector('#board-link').className  = '';
+    document.querySelector('#member-link').className  = 'active';
     membersPage()
 
   }
@@ -197,9 +201,9 @@ function showBtns(event) {
 
     cancelBtn.style.display = ('none');
 
-    editBtn.style.display = ('inline-block');
+    editBtn.style.display = ('');
 
-    deleteBtn.style.display = ('inline-block');
+    deleteBtn.style.display = ('');
 
     const memberLi = cancelBtn.closest('li');
 
@@ -216,13 +220,13 @@ function showBtns(event) {
   if (target.textContent === 'Save') {
 
       saveMember(target);
-    saveBtn.style.display = ('inline-block');
+    saveBtn.style.display = ('none');
 
-    cancelBtn.style.display = ('inline-block');
+    cancelBtn.style.display = ('none');
 
-    editBtn.style.display = ('none');
+    editBtn.style.display = ('');
 
-    deleteBtn.style.display = ('none');
+    deleteBtn.style.display = ('');
 
     }
 
@@ -515,17 +519,23 @@ function deleteMember(target) {
   //a function that deletes a list.
   function removeList(event) {
 
-  confirm("are you sure you want to delete ${``}?");
-
   console.info(event.target);
   //saves the event 'click'.
   const target = event.target;
 
   //catching closest father of 'deleter'.
-  const listPanel = target.closest('.panel');
+  const listPanel = target.closest('.card-list');
 
   //removing closest father of 'deleter'.
-  listPanel.remove();
+  const listId = listPanel.getAttribute('list-id');
+
+  for ( let list in appData.lists ) {
+    if (appData.lists[list].id == listId) {
+      confirm("are you sure you want to delete ["+ appData.lists[list].title +"]?");
+      appData.lists.splice(list,1);
+    }
+  }
+  initPageByHash();
 
 }
 
@@ -650,7 +660,7 @@ function saveCard(event) {
 
         const toList = document.getElementById("change-list").value;
 
-        debugger;
+
         if (list.title != toList) {
           for (let listx of appData.lists) {
             if (listx.title === toList) {
