@@ -7,13 +7,13 @@ const appData = {
   members: []
 };
 
-function findListByTitle(title) {
-  return appData.lists.find((list)=> list.title === title);
-}
-
-function findListById(id) {
-  return appData.lists.find((list)=> list.id === id);
-}
+// function findListByTitle(title) {
+//   return appData.lists.find((list)=> list.title === title);
+// }
+//
+// function findListById(id) {
+//   return appData.lists.find((list)=> list.id === id);
+// }
 
 
 window.addEventListener('hashchange', () => {
@@ -535,7 +535,7 @@ function deleteMember(target) {
       appData.lists.splice(list,1);
     }
   }
-  initPageByHash();
+  // initPageByHash();
 
 }
 
@@ -548,14 +548,12 @@ function deleteMember(target) {
       members: []
     };
 
-    for(let list in appData.lists) {
+    for(let list in MODEL.returnListsAppData) {
       if (appData.lists[list].id === listId) {
         appData.lists[list].tasks.push(newCard);
         initPageByHash();
       }
     }
-
-
   }
 
   function openModal(event) {
@@ -801,6 +799,7 @@ function saveCard(event) {
       }
     }
   }
+
 
 
   //that function creates elemnt by tagname className and parent.
