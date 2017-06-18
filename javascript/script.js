@@ -1,86 +1,92 @@
-/**
- * Created by avishay on 27-Feb-17.
- */
+(function () {
 
-const appData = {
-  lists: [],
-  members: []
-};
-
-// function findListByTitle(title) {
-//   return appData.lists.find((list)=> list.title === title);
-// }
-//
-// function findListById(id) {
-//   return appData.lists.find((list)=> list.id === id);
-// }
+  function onArrival() {
 
 
-window.addEventListener('hashchange', () => {
-  initPageByHash();
-});
+    window.addEventListener('hashchange', () => {
+      initPageByHash();
+    });
 
-function initPageByHash() {
+    let localAppData = JSON.parse(localStorage.getItem('appData'));
 
-  const hash = window.location.hash;
-  if (!hash) {
-    window.location.hash = '#board';
-    return;
+    if (localAppData) {
+      MODEL.appDataIsLocalAppData(localAppData);
+      initPageByHash();
+    }
+
+    else {
+      getAppData();
+    }
   }
 
-  if (hash === '#board') {
+  onArrival();
 
-    document.querySelector('#board-link').className  = 'active';
-    document.querySelector('#member-link').className  = '';
+  function initPageByHash() {
 
-    document.querySelector('main').innerHTML = '';
+    const hash = window.location.hash;
+    if (!hash) {
+      window.location.hash = '#board';
+      return;
+    }
 
-    for(let list of appData.lists)
+    if (hash === '#board') {
 
-      addingAList(list);
+      document.querySelector('#board-link').className = 'active';
+      document.querySelector('#member-link').className = '';
 
-    const addListBtn = `
-      <button class="btnAddAPanel" onclick="addingAList()">
+      document.querySelector('main').innerHTML = '';
+
+      for (let list of MODEL.returnListsAppData()) {
+        addingAList(list);
+      }
+
+      const addListBtn = `
+      <button class="btnAddAPanel">
         <span class="btnShaping"> add a panel </span>
       </button>
     `;
-    const main = document.querySelector('main');
+      const main = document.querySelector('main');
 
-    //inserting panel btn to main.
-    main.innerHTML += addListBtn;
-    dropdownEventListener();
-    puttingEventListenersOnDeleteListBtn();
-    initListTitles();
-    addEventListenerEditClick();
-    addEventListnerDeleteCard();
-    addEventListnerSaveCard();
+      //inserting panel btn to main.
+      main.innerHTML += addListBtn;
+
+      const addList = document.querySelector('.btnAddAPanel');
+
+      addList.addEventListener('click', addingAList);
+
+      dropdownEventListener();
+      puttingEventListenersOnDeleteListBtn();
+      initListTitles();
+      addEventListenerEditClick();
+      addEventListnerDeleteCard();
+      addEventListnerSaveCard();
+      newCardEventListener();
+    }
+
+    if (hash === '#members') {
+      document.querySelector('#board-link').className = '';
+      document.querySelector('#member-link').className = 'active';
+      membersPage()
+
+    }
   }
 
-  if (hash === '#members') {
-    document.querySelector('#board-link').className  = '';
-    document.querySelector('#member-link').className  = 'active';
-    membersPage()
+  function isLoadingDone() {
 
+    if (MODEL.returnListsAppData().length && MODEL.returnMembersAppData().length) {
+      return true;
+    }
+
+    else {
+      return false;
+    }
   }
-}
-
-function isLoadingDone() {
-
-  if(appData.lists.length && appData.members.length){
-
-    return true;
-  }
-
-  else {
-    return false;
-  }
-}
 
 //-----------------members-------------
 
-function membersPage() {
+  function membersPage() {
 
-  const html = `
+    const html = `
     <div class="membersMainDiv">
       <h2 class="membersH2">Members TasksBoard</h2>
       <ul class="list-group membersUl">
@@ -94,376 +100,288 @@ function membersPage() {
     </div>
   `;
 
-  //catching place that gets  div members.
-  const mainDiv = document.querySelector('main');
+    //catching place that gets  div members.
+    const mainDiv = document.querySelector('main');
 
-  //inserting member div to main.
-  mainDiv.innerHTML = html;
+    //inserting member div to main.
+    mainDiv.innerHTML = html;
 
-  //catching membersul.
-  const memberUl = document.querySelector('.membersUl');
+    //catching membersul.
+    const memberUl = document.querySelector('.membersUl');
 
-  //catching li.
-  const memberLastLi = document.querySelector('.memberLastLi');
+    //catching li.
+    const memberLastLi = document.querySelector('.memberLastLi');
 
-  appData.members.forEach((member) =>{
+    MODEL.returnMembersAppData().forEach((member) => {
 
-    //catching all members li.
-    const memberLi = createElement('li', ['list-group-item','memberLi'], memberUl);
+      //catching all members li.
+      const memberLi = createElement('li', ['list-group-item', 'memberLi'], memberUl);
 
-    //catching id from appdata.
-    memberLi.setAttribute('unique-id', member.id);
+      //catching id from appdata.
+      memberLi.setAttribute('unique-id', member.id);
 
-    //creating input next member name holder.
-    const memberInput = createElement('input',['memberInput'],memberLi);
+      //creating input next member name holder.
+      const memberInput = createElement('input', ['memberInput'], memberLi);
 
-    //creating span where member name will be.
-    const memberNameHolder = createElement('span',['memberNameHolder'],memberLi);
+      //creating span where member name will be.
+      const memberNameHolder = createElement('span', ['memberNameHolder'], memberLi);
 
-    //inserting name from appdata to everymemberLi.
-    memberNameHolder.textContent = member.name;
+      //inserting name from appdata to everymemberLi.
+      memberNameHolder.textContent = member.name;
 
-    //inserting every new li after 'add member btn'.
-    memberUl.insertBefore(memberLi , memberLastLi);
+      //inserting every new li after 'add member btn'.
+      memberUl.insertBefore(memberLi, memberLastLi);
 
+      //creating member edit button.
+      const editBtn = createElement('button', ['btn', 'btn-primary', 'btn-group', 'editBtn', 'seen'], memberLi);
 
-    //creating member edit button.
-    const editBtn = createElement('button',['btn', 'btn-primary','btn-group' ,'editBtn','seen'],memberLi);
+      //putting event listener on edit btn.
+      editBtn.addEventListener('click', showBtns);
 
-    //putting event listener on edit btn.
-    editBtn.addEventListener('click', showBtns);
+      editBtn.textContent = 'Edit';
 
-    editBtn.textContent = 'Edit';
+      //creating member delete button.
+      const deleteBtn = createElement('button', ['btn', 'delete-card-style', 'deleteBtn', 'seen'], memberLi);
 
+      //putting event listener on delete btn.
+      deleteBtn.addEventListener('click', showBtns);
 
-    //creating member delete button.
-    const deleteBtn = createElement('button',['btn','delete-card-style','deleteBtn','seen'],memberLi);
+      //insert text to bottun.
+      deleteBtn.textContent = 'Delete';
 
-    //putting event listener on delete btn.
-    deleteBtn.addEventListener('click', showBtns);
+      //creating member delete button.
+      const cancelBtn = createElement('button', ['btn', 'delete-card-style', 'cancelBtn'], memberLi);
 
-    //insert text to bottun.
-    deleteBtn.textContent = 'Delete';
+      //putting event listener on cancel btn.
+      cancelBtn.addEventListener('click', showBtns);
 
+      //insert text to bottun.
+      cancelBtn.textContent = 'Cancel';
 
-    //creating member delete button.
-    const cancelBtn = createElement('button',['btn','delete-card-style','cancelBtn'],memberLi);
+      //creating member delete button.
+      const saveBtn = createElement('button', ['btn', 'delete-card-style', 'saveBtn'], memberLi);
 
-    //putting event listener on cancel btn.
-    cancelBtn.addEventListener('click', showBtns);
+      //putting event listener on save btn.
+      saveBtn.addEventListener('click', showBtns);
 
-    //insert text to bottun.
-    cancelBtn.textContent = 'Cancel';
+      //insert text to bottun.
+      saveBtn.textContent = 'Save'
+    });
 
-
-    //creating member delete button.
-    const saveBtn = createElement('button',['btn','delete-card-style','saveBtn'],memberLi);
-
-    //putting event listener on save btn.
-    saveBtn.addEventListener('click', showBtns);
-
-    //insert text to bottun.
-    saveBtn.textContent = 'Save'
-  });
-
-  addEventLintenerNewMemberBtn();
-}
-
-function showBtns(event) {
-
-  const target = event.target;
-  console.info(target.textContent);
-
-  const saveBtn = event.target.closest('li').querySelector('.saveBtn');
-
-  const cancelBtn = event.target.closest('li').querySelector('.cancelBtn');
-
-  const editBtn = event.target.closest('li').querySelector('.editBtn');
-
-  const deleteBtn = event.target.closest('li').querySelector('.deleteBtn');
-
-  if (target.textContent === 'Edit') {
-
-    saveBtn.style.display = ('inline-block');
-
-    cancelBtn.style.display = ('inline-block');
-
-    editBtn.style.display = ('none');
-
-    deleteBtn.style.display = ('none');
-
-    editingMember(target);
+    addEventLintenerNewMemberBtn();
   }
 
-  if (target.textContent === 'Cancel') {
+  function showBtns(event) {
 
-    saveBtn.style.display = ('none');
+    const target = event.target;
 
-    cancelBtn.style.display = ('none');
+    const saveBtn = event.target.closest('li').querySelector('.saveBtn');
 
-    editBtn.style.display = ('');
+    const cancelBtn = event.target.closest('li').querySelector('.cancelBtn');
 
-    deleteBtn.style.display = ('');
+    const editBtn = event.target.closest('li').querySelector('.editBtn');
 
-    const memberLi = cancelBtn.closest('li');
+    const deleteBtn = event.target.closest('li').querySelector('.deleteBtn');
 
-    const memberInput = memberLi.querySelector('.memberLi > input');
+    if (target.textContent === 'Edit') {
 
-    memberInput.style.display = 'none';
+      saveBtn.style.display = ('inline-block');
 
-    const memberSpan = memberLi.querySelector('.memberLi > span');
+      cancelBtn.style.display = ('inline-block');
 
-    memberSpan.style.display = 'block';
+      editBtn.style.display = ('none');
 
-  }
+      deleteBtn.style.display = ('none');
 
-  if (target.textContent === 'Save') {
+      editingMember(target);
+    }
 
-      saveMember(target);
-    saveBtn.style.display = ('none');
+    if (target.textContent === 'Cancel') {
 
-    cancelBtn.style.display = ('none');
+      saveBtn.style.display = ('none');
 
-    editBtn.style.display = ('');
+      cancelBtn.style.display = ('none');
 
-    deleteBtn.style.display = ('');
+      editBtn.style.display = ('');
+
+      deleteBtn.style.display = ('');
+
+      const memberLi = cancelBtn.closest('li');
+
+      const memberInput = memberLi.querySelector('.memberLi > input');
+
+      memberInput.style.display = 'none';
+
+      const memberSpan = memberLi.querySelector('.memberLi > span');
+
+      memberSpan.style.display = 'block';
 
     }
 
-  if (target.textContent === 'Delete'){
+    if (target.textContent === 'Save') {
 
-    deleteMember(target);
+      saveMember(target);
 
-  }
+      saveBtn.style.display = ('none');
 
-}
+      cancelBtn.style.display = ('none');
 
-function addEventLintenerNewMemberBtn() {
-  //catching btn at add new member page.
-  const newMemberAreaBtn = document.querySelector('.memberNewAreaBtn');
+      editBtn.style.display = ('');
 
-  //adding event listeners on the the task area.
-  // addEventListeners(newMemberArea, ['click', 'keypress'], saveTextNewMember);
+      deleteBtn.style.display = ('');
 
-  newMemberAreaBtn.addEventListener('click', saveTextNewMember);
+    }
 
-  const newMemberArea = document.querySelector('.addNewMemberArea');
+    if (target.textContent === 'Delete') {
 
-  newMemberArea.addEventListener('keypress', saveTextNewMember);
-
-}
-
-function createMember() {
-
-  // Take the value from the input
-  const textArea = document.querySelector('.addNewMemberArea');
-
-  //catching area text.
-  const value = textArea.value;
-
-  //creating new member object.
-  const newMember = {
-    id: uuid(),
-
-    name: value
-  };
-
-  //pushing new member obj to member data.
-  appData.members.push(newMember);
-
-  //refreshing member page.
-  membersPage();
-}
-
-function saveTextNewMember(event) {
-
-  if (event.type === 'click'|| event.keyCode === 13){
-
-    createMember()
-  }
-}
-
-function editingMember(target) {
-
-  const memberLi = target.closest('li');
-
-  const memberSpan = memberLi.querySelector('.memberLi > span');
-
-  memberSpan.style.display = 'none';
-
-  spanValue = memberSpan.textContent;
-
-  const memberInput = memberLi.querySelector('.memberLi > input');
-
-  memberInput.style.display = 'block';
-
-  memberInput.value = spanValue;
-  memberInput.focus();
-
-}
-
-function saveMember(target){
-
-  const memberLi = target.closest('li');
-
-  const memberInput = memberLi.querySelector('.memberLi > input');
-
-  memberInput.style.display = 'none';
-
-  inputValue = memberInput.value;
-
-  console.info(inputValue);
-
-  const memberSpan = memberLi.querySelector('.memberLi > span');
-
-  memberSpan.style.display = 'block';
-
-  memberSpan.innerHTML = inputValue;
-
-}
-
-function deleteMember(target) {
-
-  const memberLi = target.closest('li');
-
-  memberLiId = memberLi.getAttribute('unique-id');
-
-  for (let i = 0; i < appData.members.length; i++){
-
-    if (memberLiId === appData.members[i].id){
-      appData.members.splice(i, 1);
+      deleteMember(target);
       membersPage();
     }
   }
 
-}
+  function addEventLintenerNewMemberBtn() {
+    //catching btn at add new member page.
+    const newMemberAreaBtn = document.querySelector('.memberNewAreaBtn');
+
+    //adding event listeners on the the task area.
+    // addEventListeners(newMemberArea, ['click', 'keypress'], saveTextNewMember);
+
+    newMemberAreaBtn.addEventListener('click', saveTextNewMember);
+
+    const newMemberArea = document.querySelector('.addNewMemberArea');
+
+    newMemberArea.addEventListener('keypress', saveTextNewMember);
+
+  }
+
+  function createMember() {
+
+    // Take the value from the input
+    const textArea = document.querySelector('.addNewMemberArea');
+
+    //catching area text.
+    const value = textArea.value;
+
+    //creating new member object.
+    const newMember = {
+      id: uuid(),
+
+      name: value
+    };
+
+    //pushing new member obj to member data.
+    MODEL.addingNewMember(newMember);
+
+    //refreshing member page.
+    membersPage();
+  }
+
+  function saveTextNewMember(event) {
+
+    if (event.type === 'click' || event.keyCode === 13) {
+
+      createMember()
+    }
+  }
+
+  function editingMember(target) {
+
+    const memberLi = target.closest('li');
+
+    const memberSpan = memberLi.querySelector('.memberLi > span');
+
+    memberSpan.style.display = 'none';
+
+    spanValue = memberSpan.textContent;
+
+    const memberInput = memberLi.querySelector('.memberLi > input');
+
+    memberInput.style.display = 'block';
+
+    memberInput.value = spanValue;
+
+    memberInput.focus();
+
+  }
+
+  function saveMember(target) {
+
+    const memberLi = target.closest('li');
+
+    const memberInput = memberLi.querySelector('.memberLi > input');
+
+    inputValue = memberInput.value;
+
+    if (inputValue.length !== 0) {
+      const memberSpan = memberLi.querySelector('.memberLi > span');
+
+      memberInput.style.display = 'none';
+
+      memberSpan.style.display = 'block';
+
+      memberSpan.innerHTML = inputValue;
+    }
+    else if (inputValue.length === 0) {
+      alert('please enter member name');
+      memberInput.style.display = 'block';
+      memberInput.focus();
+
+      const saveBtn = event.target.closest('li').querySelector('.saveBtn');
+      const cancelBtn = event.target.closest('li').querySelector('.cancelBtn');
+      const editBtn = event.target.closest('li').querySelector('.editBtn');
+      const deleteBtn = event.target.closest('li').querySelector('.deleteBtn');
+
+      saveBtn.style.display = 'block';
+
+      cancelBtn.style.display = 'block';
+
+      editBtn.style.display = 'none';
+
+      deleteBtn.style.display = 'none';
+    }
+  }
+
+  function deleteMember(target) {
+
+    const memberLi = target.closest('li');
+
+    memberLiId = memberLi.getAttribute('unique-id');
+
+    //delete member in appData.
+    MODEL.deleteMember(memberLiId);
+  }
 
 // -------------------Board----------------------
+  function getInitials(str) {
+
+    const strArr = str.split(' ');
+    const twoWordArr = [];
+    for (const smallStr of strArr) {
+      const letter = smallStr[0].toUpperCase();
+
+      twoWordArr.push(letter);
+    }
+    return twoWordArr.join('');
+  }
 
   function addingAList(newList) {
 
+    function hendelCardPlace(list) {
+      //element that creates new div.
+      const divHolder = document.createElement('div');
 
-    if (newList === undefined) {
-      const lst = { id: 'New List', title: 'New List', tasks: [] };
-      appData.lists.push(lst);
-      initPageByHash();
-    }
+      divHolder.className = 'card-list';
 
-    function hendelCardPlace(obj) {
+      //implementing new div in main.
+      document.querySelector('main').insertBefore(divHolder, document.querySelector('.btnAddAPanel'));
 
-      if (obj !== undefined) {
+      const listTitle = newList.title ? newList.title : 'New List';
 
-        for (let task of obj.tasks) {
-
-
-          //catch the current panel.
-          const currentPanel = newDiv.querySelector('.temp');
-
-          //target right place to insert the new card.
-          const currentCardListHolder = currentPanel.querySelector(".panel-body");
-
-          //creating element that holds div creation.
-          const divHolder = document.createElement('div');
-
-          //giving divHolder style.
-          divHolder.className = "card";
-
-          // allocate id if not exist
-          if (task.id === undefined)
-              task.id = uuid();
-
-          //giving every card an id.
-          divHolder.setAttribute('unique-id', task.id);
-
-          //implementing divHolder into panel's body.
-          currentCardListHolder.appendChild(divHolder);
-
-          //creating button element with every card.
-          const creatingButton = document.createElement('button');
-
-          //giving every created button some style.
-          creatingButton.className += "btn btn-default btn-group-xs btn-position-style edit-card-btn";
-
-          //inserting task into a card.
-          divHolder.innerHTML = task.text;
-
-          //implementing a button in every card.
-          divHolder.appendChild(creatingButton);
-
-          //inserting text to the button.
-          creatingButton.innerHTML = 'Edit card';
-
-
-
-          //creating element that holds div.
-          const membersHolder = document.createElement('div');
-
-          //giving memberHolder style.
-          membersHolder.className += "btn-group btn-group-xs divMember";
-
-          function memberCreater() {
-
-            for (let member of task.members) {
-
-              // check if member exist in member list
-              let found = false;
-              for (let m of appData.members)
-                if (m.name === member)
-                    found = true;
-
-              if (!found) break;
-
-              //creating button element with every card.
-              const MemberInitBtn = document.createElement('span');
-
-              //giving button members style.
-              MemberInitBtn.className += "memberSpan";
-
-              //implementing button in every div member.
-              membersHolder.appendChild(MemberInitBtn);
-
-              //inserting member initial into button.
-              MemberInitBtn.innerHTML += getInitials(member);
-
-              // implementing div member into card.
-              divHolder.appendChild(membersHolder);
-
-            }
-          }
-
-          memberCreater(obj);
-        }
-      }
-
-      //function that get initials.
-      function getInitials(str) {
-
-        const strArr = str.split(' ');
-        const twoWordArr = [];
-        for (const smallStr of strArr) {
-          const letter = smallStr[0].toUpperCase();
-
-          twoWordArr.push(letter);
-        }
-        return twoWordArr.join('');
-      }
-
-    }
-
-
-    //element that creates new div.
-    const divHolder = document.createElement('div');
-    divHolder.className = 'card-list';
-    divHolder.setAttribute('list-id', newList.id);
-
-    //implementing new div in main.
-    document.querySelector('main').insertBefore(divHolder, document.querySelector('.btnAddAPanel'));
-
-    const listTemplate = `
+      const listTemplate = `
       <div class="panel panel-default temp">  
         <div class="panel-heading panel-size">
           <input type="text" style="display:none">
-          <span class="newList">`+ newList.title +`</span>
+          <span class="newList">` + listTitle + `</span> 
 
           <div class="dropdown">
             <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
@@ -474,25 +392,56 @@ function deleteMember(target) {
               <li><a href="#" class="deleter">Delete List</a></li>
             </ul>
           </div>
-
         </div>
         <div class="panel-body">
-          
         </div>
-
         <div class="panel-footer panel-size">
-          <button onclick="createACard('`+ newList.id + `')" class="addACard">add a card...</button>
+        <button class="addACard"> add a card... </button>
         </div>
       </div>
 `;
 
-    const newDiv = document.createElement('div');
+      const newDiv = document.createElement('div');
 
-    divHolder.appendChild(newDiv);
+      newDiv.className = 'list-container';
 
-    newDiv.innerHTML = listTemplate;
+      divHolder.appendChild(newDiv);
 
-    //catching all header buttons
+      newDiv.innerHTML = listTemplate;
+
+      if (newList.title === undefined) {
+        const newCardBtn = newDiv.querySelector('.addACard');
+        const dropDownBtn = newDiv.querySelector('.dropdown-toggle');
+        const deleteListBtn = newDiv.querySelector('.deleter');
+        const newListId = uuid();
+        const lst = {
+          title: 'New List',
+          tasks: [],
+          id: newListId
+        };
+
+        newCardBtn.addEventListener('click', createACard);
+        dropDownBtn.addEventListener('click', panelActionHendler);
+        deleteListBtn.addEventListener('click', removeList);
+        divHolder.setAttribute('list-id', newListId);
+
+        MODEL.addingNewList(lst)
+      }
+
+      if (newList.id === undefined) {
+      }
+
+      if (newList.id !== undefined) {
+        divHolder.setAttribute('list-id', newList.id);
+      }
+
+      if (newList !== undefined && newList.tasks !== undefined) {
+        for (let task of newList.tasks) {
+          cardMaker(task, newDiv, newList);
+        }
+      }
+    }
+
     const btns = document.querySelectorAll('.dropdown-toggle');
 
     //inserting eventlistener to every button.
@@ -501,57 +450,31 @@ function deleteMember(target) {
     }
 
     // When the user clicks on the button, toggle between hiding and showing the dropdown content.
-    function panelActionHendler() {
-      const currentBtn = event.target;
-
-      //catching every buttens div father
-      const divParent = currentBtn.closest('.dropdown');
-
-      const ulMenu = divParent.querySelector('.dropdown-menu');
-
-      ulMenu.classList.toggle('show');
-    }
-
     hendelCardPlace(newList);
     initListTitles();
   }
 
+
   //a function that deletes a list.
   function removeList(event) {
 
-  console.info(event.target);
-  //saves the event 'click'.
-  const target = event.target;
+    //saves the event 'click'.
+    const target = event.target;
 
-  //catching closest father of 'deleter'.
-  const listPanel = target.closest('.card-list');
+    //catching closest father of 'deleter'.
+    const listPanel = target.closest('.card-list');
 
-  //removing closest father of 'deleter'.
-  const listId = listPanel.getAttribute('list-id');
+    //removing closest father of 'deleter'.
+    const listId = listPanel.getAttribute('list-id');
 
-  for ( let list in appData.lists ) {
-    if (appData.lists[list].id == listId) {
-      confirm("are you sure you want to delete ["+ appData.lists[list].title +"]?");
-      appData.lists.splice(list,1);
-    }
-  }
-  // initPageByHash();
+    const lists = MODEL.returnListsAppData();
 
-}
+    for (let list of lists) {
+      if (list.id === listId) {
+        confirm("are you sure you want to delete [" + list.title + "]?");
 
-  //function that creates a card in parent panel.
-  function createACard(listId) {
-    console.log(event);
-    const newCard = {
-      id: uuid(),
-      text: "new card",
-      members: []
-    };
+        MODEL.removeList(list);
 
-    for(let list in MODEL.returnListsAppData) {
-      if (appData.lists[list].id === listId) {
-        appData.lists[list].tasks.push(newCard);
-        initPageByHash();
       }
     }
   }
@@ -564,18 +487,17 @@ function deleteMember(target) {
     let listTitle;
 
     // find card
-    for (const list of appData.lists)
-        for (const task of list.tasks) {
-          if (task.id == cardId)
-          {
-            card = task;
-            listTitle = list.title;
-          }
-
+    for (const list of MODEL.returnListsAppData())
+      for (const task of list.tasks) {
+        if (task.id === cardId) {
+          card = task;
+          listTitle = list.title;
         }
 
+      }
+
     let editModal = document.querySelector('.edit-card-modal');
-    editModal.setAttribute('card-id',cardId);
+    editModal.setAttribute('card-id', cardId);
     let cardText = document.querySelector('.edit-modal-card-text');
     let cardMembers = document.querySelector('.edit-modal-members');
     let cardList = document.querySelector('.edit-modal-list');
@@ -583,21 +505,21 @@ function deleteMember(target) {
     cardText.value = card.text;
 
     cardMembers.innerHTML = '';
-    for (const member of appData.members) {
+    for (const member of MODEL.returnMembersAppData()) {
       let isMemberOnCard = '';
       for (const memberInCard of card.members) {
-        if (memberInCard === member.name)
+        if (memberInCard === member.name) {
           isMemberOnCard = 'checked'
+        }
       }
 
       cardMembers.innerHTML += '<label><input type="checkbox" value="' + member.name + '" name="members"' + isMemberOnCard + '>' + member.name + '</label>';
     }
     cardList.innerHTML = '';
-    for (const list of appData.lists) {
-      cardList.innerHTML += '<option>'+ list.title + '</option>'
+    for (const list of MODEL.returnListsAppData()) {
+      cardList.innerHTML += '<option>' + list.title + '</option>'
     }
 
-    console.log(listTitle);
     cardList.value = listTitle;
 
     //turning modal style to block.
@@ -617,67 +539,74 @@ function deleteMember(target) {
   function deleteCard(event) {
     let editModal = document.querySelector('.edit-card-modal');
     const cardId = editModal.getAttribute('card-id');
+    const currentCard = document.querySelector(`[unique-id = '${cardId}']`);
+    const currentList = currentCard.closest('.panel-body');
 
-    // find card
-    for (const list of appData.lists)
-      for (let task in list.tasks) {
-        if (list.tasks[task].id === cardId){
-          list.tasks.splice(task,1);
-          console.log('found delete',cardId);
-        }
-      }
+    currentList.removeChild(currentCard);
+    MODEL.deleteCard(cardId);
 
     editModal.style.display = 'none';
-    initPageByHash('');
   }
 
+  function saveCard(event) {
 
-function saveCard(event) {
+    let editModal = document.querySelector('.edit-card-modal');
+    const cardId = editModal.getAttribute('card-id');
+    const currentCard = document.querySelector(`[unique-id = '${cardId}']`);
+    let modalTextArea = document.querySelector('.edit-modal-card-text');
+    currentCard.textContent = modalTextArea.value;
 
-  let editModal = document.querySelector('.edit-card-modal');
-  const cardId = editModal.getAttribute('card-id');
-
-  let cardText = document.querySelector('.edit-modal-card-text');
-  let cardMembers = document.querySelector('.edit-modal-members');
-
-
-
-  // find card
-  for (const list of appData.lists)
-    for (let task in list.tasks) {
-      if (list.tasks[task].id === cardId){
-        console.log(list.tasks[task].text,cardText.value );
-        list.tasks[task].text = cardText.value ;
-
-        let members = [];
-        for (let i=0;i<document.getElementsByName('members').length;i++){
-          if (document.getElementsByName('members')[i].checked)
-            members.push(document.getElementsByName('members')[i].value);
-        }
-        list.tasks[task].members = members;
-
-        const toList = document.getElementById("change-list").value;
-
-
-        if (list.title != toList) {
-          for (let listx of appData.lists) {
-            if (listx.title === toList) {
-              listx.tasks.push(list.tasks[task]);
-            }
-          }
-          list.tasks.splice(task,1);
-        }
-
-
-
+    let members = [];
+    for (let i = 0; i < document.getElementsByName('members').length; i++) {
+      if (document.getElementsByName('members')[i].checked) {
+        members.push(document.getElementsByName('members')[i].value);
       }
+    }
+
+    function memberCreator() {
+      for (let member of members) {
+
+        // check if member exist in member list
+        let found = false;
+        for (let m of MODEL.returnMembersAppData())
+          if (m.name === member) {
+            found = true;
+          }
+
+        if (!found) {
+          break;
+        }
+
+        const divHolder = document.createElement('div');
+
+        //creating element that holds div.
+        const membersHolder = document.createElement('div');
+
+        //giving memberHolder style.
+        membersHolder.className += "btn-group btn-group-xs divMember";
+
+        //creating button element with every card.
+        const MemberInitBtn = document.createElement('span');
+
+        //giving button members style.
+        MemberInitBtn.className += "memberSpan";
+
+        //implementing button in every div member.
+        membersHolder.appendChild(MemberInitBtn);
+
+        //inserting member initial into button.
+        MemberInitBtn.innerHTML += getInitials(member);
+
+        // implementing div member into card.
+        divHolder.appendChild(membersHolder);
+      }
+    }
+
+    memberCreator();
+
+    MODEL.saveChangesOnCard(cardId, modalTextArea.value,members);
+    editModal.style.display = 'none';
   }
-
-
-
-  editModal.style.display = 'none';
-  initPageByHash();
-}
 
   function titleClickHandler(event) {
     const target = event.target;
@@ -704,9 +633,10 @@ function saveCard(event) {
       // Update the title with that value.
       const titleElm = target.parentNode.querySelector('span');
 
-      for (let list in appData.lists){
-        if (appData.lists[list].title == titleElm.innerHTML)
-          appData.lists[list].title = value;
+      for (let list of MODEL.returnListsAppData()) {
+        if (list.title === titleElm.innerHTML) {
+          list.title = value;
+        }
       }
 
       titleElm.innerHTML = value;
@@ -744,6 +674,102 @@ function saveCard(event) {
     }
   }
 
+  function cardMaker(task, div, list) {
+
+    const main = document.querySelector('main');
+
+    //catch the current panel.
+    const currentPanel = div.querySelector('.temp');
+
+    //target right place to insert the new card.
+    const currentCardListHolder = currentPanel.querySelector(".panel-body");
+
+    //creating element that holds div creation.
+    const divHolder = document.createElement('div');
+
+    //giving divHolder style.
+    divHolder.className = "card";
+
+    // allocate id if not exist
+    if (task.id === undefined) {
+      task.id = uuid();
+    }
+
+    //giving every card an id.
+    divHolder.setAttribute('unique-id', task.id);
+
+    //implementing divHolder into panel's body.
+    currentCardListHolder.appendChild(divHolder);
+
+    //creating button element with every card.
+    const creatingButton = document.createElement('button');
+
+    //giving every created button some style.
+    creatingButton.className += "btn btn-default btn-group-xs btn-position-style edit-card-btn";
+
+    //inserting task into a card.
+    divHolder.innerHTML = task.text;
+
+    //implementing a button in every card.
+    divHolder.appendChild(creatingButton);
+
+    //inserting text to the button.
+    creatingButton.innerHTML = 'Edit card';
+
+    //eventListener on 'creating card'
+    creatingButton.addEventListener('click', openModal);
+
+    //creating element that holds div.
+    const membersHolder = document.createElement('div');
+
+    //giving memberHolder style.
+    membersHolder.className += "btn-group btn-group-xs divMember";
+
+    function memberCreator() {
+
+      for (let member of task.members) {
+
+        // check if member exist in member list
+        let found = false;
+        for (let m of MODEL.returnMembersAppData())
+          if (m.name === member) {
+            found = true;
+          }
+
+        if (!found) {
+          break;
+        }
+
+        //creating button element with every card.
+        const MemberInitBtn = document.createElement('span');
+
+        //giving button members style.
+        MemberInitBtn.className += "memberSpan";
+
+        //implementing button in every div member.
+        membersHolder.appendChild(MemberInitBtn);
+
+        //inserting member initial into button.
+        MemberInitBtn.innerHTML += getInitials(member);
+
+        // implementing div member into card.
+        divHolder.appendChild(membersHolder);
+      }
+    }
+
+    memberCreator();
+  }
+
+  function newCardEventListener() {
+
+    //catching all add a card buttons
+    const btns = document.querySelectorAll('.addACard');
+
+    for (let btn of btns) {
+      btn.addEventListener("click", createACard);
+    }
+  }
+
 // When the user clicks on the button, toggle between hiding and showing the dropdown content
   function panelActionHendler() {
     const currentBtn = event.target;
@@ -751,18 +777,18 @@ function saveCard(event) {
     //catching every buttens div father
     const divParent = currentBtn.closest('.dropdown');
 
-    const ulMenu = divParent.querySelector('.dropdown-menu');
 
+    const ulMenu = divParent.querySelector('.dropdown-menu');
 
     ulMenu.classList.toggle('show');
   }
 
   function puttingEventListenersOnDeleteListBtn() {
 
-  //catching diffirent "Delete List" eachtime.
+    //catching diffirent "Delete List" eachtime.
     const deleters = document.querySelectorAll('.deleter');
 
-  //adding eventlisteners on every 'delete list'.
+    //adding eventlisteners on every 'delete list'.
     for (let deleter of deleters) {
       deleter.addEventListener('click', removeList);
     }
@@ -789,6 +815,25 @@ function saveCard(event) {
     }
   }
 
+//function that creates a card in parent panel.
+  function createACard(event) {
+    const newCard = {
+      id: uuid(),
+      text: "new card",
+      members: []
+    };
+
+    const target = event.target;
+
+    const targetList = target.closest('.card-list');
+
+    const targetListId = targetList.getAttribute('list-id');
+
+    cardMaker(newCard, targetList);
+
+    MODEL.addNewCardInAppData(targetListId, newCard);
+
+  }
 
 // ------------general functions-------
 
@@ -801,28 +846,27 @@ function saveCard(event) {
   }
 
 
-
-  //that function creates elemnt by tagname className and parent.
+//that function creates elemnt by tagname className and parent.
   function createElement(tagName, className, parent) {
 
-  const element = document.createElement(tagName);
+    const element = document.createElement(tagName);
 
-  if (className !== undefined) {
-    let classesStr = '';
-    className.forEach((e) => {
-      classesStr += ' ' + e;
-    });
-    element.className = classesStr;
+    if (className !== undefined) {
+      let classesStr = '';
+      className.forEach((e) => {
+        classesStr += ' ' + e;
+      });
+      element.className = classesStr;
 
+    }
+
+    if (parent !== undefined) {
+      parent.appendChild(element);
+
+    }
+
+    return element;
   }
-
-  if (parent !== undefined) {
-    parent.appendChild(element);
-
-  }
-
-  return element;
-}
 
 // -----ajax----------JSON--------
 
@@ -832,7 +876,7 @@ function saveCard(event) {
 
     let data = JSON.parse(target.response);
 
-    appData.lists = data.board;
+    MODEL.sendListsToModel(data.board);
 
     if (isLoadingDone()) {
 
@@ -853,7 +897,7 @@ function saveCard(event) {
     const target = event.target;
     let data = JSON.parse(target.responseText);
 
-    appData.members = data.members;
+    MODEL.sendMembersToModel(data.members);
 
     if (isLoadingDone()) {
 
@@ -876,10 +920,8 @@ function saveCard(event) {
     getMembersData();
   }
 
-  getAppData();
 
+  uuid.v1(); // -> v1 UUID
+  uuid.v4(); // -> v4 UUID
 
-
-
-uuid.v1(); // -> v1 UUID
-uuid.v4(); // -> v4 UUID
+})();

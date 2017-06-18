@@ -179,9 +179,6 @@ main{
   padding-left: 20px;
   padding-top: 20px;
 }
-.label-style{
-  width: 20%;
-}
 
 .shortBoxes{
   width: 100%;
@@ -242,12 +239,18 @@ main{
    display: inline-block;
  }
 
+ .memberNewAreaBtn{
+   padding: 6px 12px;
+   margin-left: 10px;
+ }
+
 .memberNameHolder{
   display: block;
   width: 60%;
 }
 .memberInput{
   display: none;
+  margin-right: 106px;
 }
 
 .memberLastLi{
@@ -261,7 +264,7 @@ main{
 .editBtn:focus,
 .editBtn:hover,
 .editBtn{
-  padding: 5px 15px;
+  padding: 5px 25px;
   margin-left: 10px;
   display: none;
   background-color: #ffcc00;
@@ -287,7 +290,7 @@ main{
 }
 
 .saveBtn{
-  padding: 5px 15px;
+  padding: 5px 20px;
   margin:0 0 0 10px;
   background-color: limegreen;
   display: none;
