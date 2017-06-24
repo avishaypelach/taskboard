@@ -454,7 +454,6 @@
     initListTitles();
   }
 
-
   //a function that deletes a list.
   function removeList(event) {
 
@@ -549,12 +548,13 @@
   }
 
   function saveCard(event) {
-
-    let editModal = document.querySelector('.edit-card-modal');
+    const editModal = document.querySelector('.edit-card-modal');
     const cardId = editModal.getAttribute('card-id');
     const currentCard = document.querySelector(`[unique-id = '${cardId}']`);
-    let modalTextArea = document.querySelector('.edit-modal-card-text');
-    currentCard.textContent = modalTextArea.value;
+    const modalTextArea = document.querySelector('.edit-modal-card-text');
+    const cardTitle = currentCard.querySelector('.card-title');
+    cardTitle.innerHTML = modalTextArea.value;
+    const cardMembers = currentCard.querySelector('.divMember');
 
     let members = [];
     for (let i = 0; i < document.getElementsByName('members').length; i++) {
@@ -564,6 +564,9 @@
     }
 
     function memberCreator() {
+
+      cardMembers.innerHTML = '';
+
       for (let member of members) {
 
         // check if member exist in member list
@@ -574,16 +577,9 @@
           }
 
         if (!found) {
+          console.info('lol');
           break;
         }
-
-        const divHolder = document.createElement('div');
-
-        //creating element that holds div.
-        const membersHolder = document.createElement('div');
-
-        //giving memberHolder style.
-        membersHolder.className += "btn-group btn-group-xs divMember";
 
         //creating button element with every card.
         const MemberInitBtn = document.createElement('span');
@@ -592,13 +588,11 @@
         MemberInitBtn.className += "memberSpan";
 
         //implementing button in every div member.
-        membersHolder.appendChild(MemberInitBtn);
+        cardMembers.appendChild(MemberInitBtn);
 
         //inserting member initial into button.
         MemberInitBtn.innerHTML += getInitials(member);
 
-        // implementing div member into card.
-        divHolder.appendChild(membersHolder);
       }
     }
 
@@ -707,8 +701,13 @@
     //giving every created button some style.
     creatingButton.className += "btn btn-default btn-group-xs btn-position-style edit-card-btn";
 
+    const cardTitle = document.createElement('div');
+    cardTitle.className += 'card-title';
+    cardTitle.innerHTML = task.text;
+
+    divHolder.appendChild(cardTitle);
     //inserting task into a card.
-    divHolder.innerHTML = task.text;
+    //divHolder.innerHTML = task.text;
 
     //implementing a button in every card.
     divHolder.appendChild(creatingButton);
@@ -752,9 +751,9 @@
         //inserting member initial into button.
         MemberInitBtn.innerHTML += getInitials(member);
 
-        // implementing div member into card.
-        divHolder.appendChild(membersHolder);
       }
+      // implementing div member into card.
+      divHolder.appendChild(membersHolder);
     }
 
     memberCreator();

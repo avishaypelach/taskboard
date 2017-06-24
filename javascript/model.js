@@ -105,7 +105,6 @@ const MODEL = (function () {
   }
 
   function removeList(listForRemoval) {
-    console.info(listForRemoval);
     const targetList = appData.lists.find((list) => {
       return list.id === listForRemoval.id
     });

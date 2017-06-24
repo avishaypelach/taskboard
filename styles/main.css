@@ -88,6 +88,10 @@ main{
   overflow-x: hidden;
   padding: 20px 6px;
 }
+
+.edit-card-btn{
+  margin-top: 1px;
+}
 .btnAddAPanel{
   display: inline-block;
   width: 200px;
@@ -131,12 +135,12 @@ main{
 }
 
 .divMember{
-
   display: flex;
   flex-direction: row;
   width: 100%;
   justify-content: flex-end;
   height: 20px;
+  margin-top: 6px;
 }
 .memberSpan,
 .memberSpan:hover,
@@ -221,7 +225,7 @@ main{
 }
 
 .membersUl{
-  width: 50%;
+  width: 500px;
   margin-left: 20px;
 }
 
@@ -231,6 +235,7 @@ main{
   align-items: center;
   padding:  0 15px;
   height: 45px;
+
 }
 
  ul .addNewMemberArea {
