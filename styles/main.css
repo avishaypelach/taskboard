@@ -79,14 +79,13 @@ main{
 
 .card{
   position: relative;
-  height: 120px;
   width: 90%;
   border: 2px solid #00AAEA;
   margin: 10px;
   border-radius: 4px;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 20px 6px;
+  padding: 27px 6px;
 }
 
 .edit-card-btn{
